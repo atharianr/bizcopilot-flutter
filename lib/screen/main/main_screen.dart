@@ -130,6 +130,11 @@ class MainScreen extends StatelessWidget {
         isSelected
             ? BizColors.colorPrimary.getColor(context)
             : BizColors.colorGrey.getColor(context);
-    return SvgPicture.asset(assetName, color: color, width: 32, height: 32);
+    return SvgPicture.asset(
+      assetName,
+      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      width: 32,
+      height: 32,
+    );
   }
 }
