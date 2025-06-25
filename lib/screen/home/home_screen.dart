@@ -68,16 +68,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: ShimmerReportsCard(),
+                      child: ShimmerCard(),
                     ),
                     const SizedBox(height: 12),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
                       child: Row(
                         children: [
-                          Expanded(child: ShimmerReportsCard()),
+                          Expanded(child: ShimmerCard()),
                           const SizedBox(width: 12),
-                          Expanded(child: ShimmerReportsCard()),
+                          Expanded(child: ShimmerCard()),
                         ],
                       ),
                     ),
@@ -175,13 +175,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           vertical: 6,
                           horizontal: 24,
                         ),
-                        child: ShimmerReportsCard(),
+                        child: ShimmerCard(),
                       ),
                     ),
                   ),
                   DailyReportsLoadedState(data: var data) => Column(
                     children: List.generate(data.length, (index) {
-                      return ListReports();
+                      final item = data[index];
+                      return ListReports(
+                        title: item.name ?? "",
+                        description: item.description ?? "",
+                        amount: CurrencyUtils.formatCurrency(
+                          item.currency,
+                          item.value ?? "",
+                        ),
+                        type: item.transactionType ?? "",
+                      );
                     }),
                   ),
                   DailyReportsErrorState(error: var message) => Text(

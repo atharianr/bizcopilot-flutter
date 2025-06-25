@@ -70,10 +70,10 @@ class GradientCard extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
-                    child: Icon(
-                      Icons.info_outline,
-                      color: BizColors.colorWhite.getColor(context),
-                      size: 8,
+                    child: SvgPicture.asset(
+                      'assets/images/ic_artificial_intelligence_white_12.svg',
+                      width: 8,
+                      height: 8,
                     ),
                   ),
                 ],

@@ -3,8 +3,8 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../style/color/biz_colors.dart';
 
-class ShimmerReportsCard extends StatelessWidget {
-  const ShimmerReportsCard({super.key});
+class ShimmerCard extends StatelessWidget {
+  const ShimmerCard({super.key});
 
   @override
   Widget build(BuildContext context) {
