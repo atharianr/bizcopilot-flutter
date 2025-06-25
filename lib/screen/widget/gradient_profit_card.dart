@@ -5,9 +5,15 @@ import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
 
 class GradientProfitCard extends StatelessWidget {
+  final String forecast;
+  final String amount;
   final List<BizColors> colors;
-
-  const GradientProfitCard({super.key, required this.colors});
+  const GradientProfitCard({
+    super.key,
+    required this.forecast,
+    required this.amount,
+    required this.colors,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +54,10 @@ class GradientProfitCard extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+                        forecast,
                         style: BizTextStyles.labelSmallMedium.copyWith(
                           color: BizColors.colorWhite.getColor(context),
                         ),
-                        overflow: TextOverflow.ellipsis,
                         maxLines: 3,
                       ),
                     ),
@@ -90,7 +95,7 @@ class GradientProfitCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "IDR 2.561.000",
+                  amount,
                   style: BizTextStyles.titleLargeBold.copyWith(
                     color: BizColors.colorWhite.getColor(context),
                   ),

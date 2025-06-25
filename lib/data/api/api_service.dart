@@ -2,12 +2,20 @@ import 'package:bizcopilot_flutter/constant/constant.dart';
 import 'package:bizcopilot_flutter/data/model/request/example_request.dart';
 import 'package:bizcopilot_flutter/data/model/response/daily_reports_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/example_response.dart';
+import 'package:bizcopilot_flutter/data/model/response/home_widgets_response.dart';
 
 import 'utils/base_network.dart';
 
 class ApiServices {
-  // https://bizcopilot.bism.app/api/home-widgets
-  // https://bizcopilot.bism.app/api/daily-reports
+  Future<HomeWidgetsResponse> getHomeWidgets() {
+    final uri = Uri.parse("${Constant.baseUrl}/home-widgets");
+
+    return BaseNetwork.get<HomeWidgetsResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      parser: (json) => HomeWidgetsResponse.fromJson(json),
+    );
+  }
 
   Future<DailyReportsResponse> getDailyReports() {
     final uri = Uri.parse("${Constant.baseUrl}/daily-reports");
