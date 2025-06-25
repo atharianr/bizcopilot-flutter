@@ -37,6 +37,7 @@ dependencies:
   provider: ^6.1.5
   http: ^1.4.0
   flutter_svg: ^2.0.9
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +76,7 @@ flutter:
     - assets/images/ic_nav_add_black_36.svg
     - assets/images/ic_nav_reports_black_32.svg
     - assets/images/ic_nav_list_black_32.svg
+    - assets/images/ic_artificial_intelligence_white_12.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

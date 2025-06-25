@@ -109,32 +109,40 @@ class MainScreen extends StatelessWidget {
     ];
   }
 
-  // ignore: unused_element
   Widget _buildIcon(BuildContext context, BottomNav navItem, String iconPath) {
     final isSelected =
         context.watch<IndexNavProvider>().indexBottomNavBar == navItem.index;
 
-    return _buildSvgIcon(
-      context,
-      iconPath,
-      isSelected || navItem == BottomNav.add,
-    );
-  }
-
-  Widget _buildSvgIcon(
-    BuildContext context,
-    String assetName,
-    bool isSelected,
-  ) {
-    final color =
-        isSelected
-            ? BizColors.colorPrimary.getColor(context)
-            : BizColors.colorGrey.getColor(context);
-    return SvgPicture.asset(
-      assetName,
-      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-      width: 32,
-      height: 32,
-    );
+    if (isSelected || navItem == BottomNav.add) {
+      return ShaderMask(
+        shaderCallback: (Rect bounds) {
+          return LinearGradient(
+            colors: [
+              BizColors.colorPrimary.getColor(context),
+              BizColors.colorPrimaryDark.getColor(context),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(bounds);
+        },
+        child: SvgPicture.asset(
+          iconPath,
+          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+          // Color will be overridden by ShaderMask
+          width: 32,
+          height: 32,
+        ),
+      );
+    } else {
+      return SvgPicture.asset(
+        iconPath,
+        colorFilter: ColorFilter.mode(
+          BizColors.colorGrey.getColor(context),
+          BlendMode.srcIn,
+        ),
+        width: 32,
+        height: 32,
+      );
+    }
   }
 }
