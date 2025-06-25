@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../style/color/biz_colors.dart';
-import '../../style/typography/biz_text_styles.dart';
-import 'image_svg_widget.dart';
+import '../../../style/color/biz_colors.dart';
+import '../../../style/typography/biz_text_styles.dart';
+import '../image_svg_widget.dart';
 
 class ListReports extends StatelessWidget {
   const ListReports({super.key});
