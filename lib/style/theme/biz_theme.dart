@@ -1,3 +1,4 @@
+import 'package:bizcopilot_flutter/style/color/biz_colors.dart';
 import 'package:flutter/material.dart';
 
 import '../typography/biz_text_styles.dart';
@@ -5,7 +6,7 @@ import '../typography/biz_text_styles.dart';
 class BizTheme {
   static ThemeData get lightTheme {
     return ThemeData(
-      colorSchemeSeed: Colors.orange,
+      colorSchemeSeed: BizColors.colorBackground.color,
       brightness: Brightness.light,
       textTheme: _textTheme,
       useMaterial3: true,
