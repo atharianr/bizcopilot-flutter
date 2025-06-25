@@ -6,7 +6,9 @@ class IndexNavProvider extends ChangeNotifier {
   int get indexBottomNavBar => _indexBottomNavBar;
 
   set setIndexBottomNavBar(int value) {
-    _indexBottomNavBar = value;
-    notifyListeners();
+    if (value != 2) {
+      _indexBottomNavBar = value;
+      notifyListeners();
+    }
   }
 }
