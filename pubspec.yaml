@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   provider: ^6.1.5
   http: ^1.4.0
+  flutter_svg: ^2.0.9
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -65,6 +67,16 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/images/ic_profit_white_20.svg
+    - assets/images/ic_arrow_up_circle_white_12.svg
+    - assets/images/ic_arrow_down_circle_white_12.svg
+    - assets/images/ic_nav_home_black_32.svg
+    - assets/images/ic_nav_forecast_black_32.svg
+    - assets/images/ic_nav_add_black_36.svg
+    - assets/images/ic_nav_reports_black_32.svg
+    - assets/images/ic_nav_list_black_32.svg
+    - assets/images/ic_artificial_intelligence_white_12.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -91,3 +103,16 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  fonts:
+    - family: Quicksand
+      fonts:
+        - asset: assets/fonts/Quicksand-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Quicksand-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Quicksand-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Quicksand-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Quicksand-Light.ttf
+          weight: 300
