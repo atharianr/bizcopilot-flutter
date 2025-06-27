@@ -2,7 +2,9 @@ import 'package:bizcopilot_flutter/provider/daily_reports/daily_reports_provider
 import 'package:bizcopilot_flutter/provider/daily_reports/home_widgets_provider.dart';
 import 'package:bizcopilot_flutter/provider/example/example_api_provider.dart';
 import 'package:bizcopilot_flutter/provider/main/index_nav_provider.dart';
+import 'package:bizcopilot_flutter/screen/forecast/forecast_screen.dart';
 import 'package:bizcopilot_flutter/screen/main/main_screen.dart';
+import 'package:bizcopilot_flutter/screen/reports/reports_screen.dart';
 import 'package:bizcopilot_flutter/static/navigation/navigation_route.dart';
 import 'package:bizcopilot_flutter/style/theme/biz_theme.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +48,8 @@ class MainApp extends StatelessWidget {
       initialRoute: NavigationRoute.mainRoute.name,
       routes: {
         NavigationRoute.mainRoute.name: (context) => const MainScreen(),
+        NavigationRoute.forecastRoute.name: (context) => const ForecastScreen(),
+        NavigationRoute.reportsRoute.name: (context) => const ReportsScreen(),
         // NavigationRoute.detailRoute.name:
         //     (context) => DetailScreen(
         //       restaurantId:

@@ -1,4 +1,6 @@
+import 'package:bizcopilot_flutter/screen/forecast/forecast_screen.dart';
 import 'package:bizcopilot_flutter/screen/home/home_screen.dart';
+import 'package:bizcopilot_flutter/screen/reports/reports_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -19,11 +21,9 @@ class MainScreen extends StatelessWidget {
             _ when value.indexBottomNavBar == BottomNav.home.index =>
               const HomeScreen(),
             _ when value.indexBottomNavBar == BottomNav.forecast.index =>
-              const HomeScreen(),
-            _ when value.indexBottomNavBar == BottomNav.add.index =>
-              const HomeScreen(),
+              const ForecastScreen(),
             _ when value.indexBottomNavBar == BottomNav.reports.index =>
-              const HomeScreen(),
+              const ReportsScreen(),
             _ when value.indexBottomNavBar == BottomNav.products.index =>
               const HomeScreen(),
             _ => const HomeScreen(),
