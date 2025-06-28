@@ -11,7 +11,7 @@ import '../../utils/currency_utils.dart';
 import '../widget/gradient_card.dart';
 import '../widget/gradient_profit_card.dart';
 import '../widget/reports/reports_card.dart';
-import '../widget/reports/shimmer_card.dart';
+import '../widget/shimmer_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -35,8 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double statusBarHeight = MediaQuery.of(context).padding.top;
-
     return Scaffold(
       backgroundColor: BizColors.colorBackground.getColor(context),
       body: RefreshIndicator(
@@ -53,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ]);
         },
         child: ListView(
-          padding: EdgeInsets.only(top: statusBarHeight + 24.0),
+          padding: EdgeInsets.only(top: 24),
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
             _buildGreetingSection(context),
@@ -155,7 +153,10 @@ class _HomeScreenState extends State<HomeScreen> {
               data[0].currency,
               data[0].value,
             ),
-            colors: [BizColors.colorPrimary, BizColors.colorPrimaryDark],
+            colors: [
+              BizColors.colorPrimary.getColor(context),
+              BizColors.colorPrimaryDark.getColor(context),
+            ],
           ),
         ),
         const SizedBox(height: 12),
@@ -172,7 +173,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     data[1].currency,
                     data[1].value,
                   ),
-                  colors: [BizColors.colorGreen, BizColors.colorGreenDark],
+                  colors: [
+                    BizColors.colorGreen.getColor(context),
+                    BizColors.colorGreenDark.getColor(context),
+                  ],
                 ),
               ),
               const SizedBox(width: 12),
@@ -185,7 +189,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     data[2].currency,
                     data[2].value,
                   ),
-                  colors: [BizColors.colorOrange, BizColors.colorOrangeDark],
+                  colors: [
+                    BizColors.colorOrange.getColor(context),
+                    BizColors.colorOrangeDark.getColor(context),
+                  ],
                 ),
               ),
             ],

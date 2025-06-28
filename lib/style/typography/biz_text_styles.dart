@@ -83,56 +83,62 @@ class BizTextStyles {
   /// bodyLargeExtraBold Text Style
   static TextStyle bodyLargeExtraBold = _commonStyle.copyWith(
     fontSize: 16,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w700,
     height: 1.56,
   );
 
   /// bodyLargeBold Text Style
   static TextStyle bodyLargeBold = _commonStyle.copyWith(
     fontSize: 16,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     height: 1.56,
   );
 
   /// bodyLargeMedium Text Style
   static TextStyle bodyLargeMedium = _commonStyle.copyWith(
     fontSize: 14,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w500,
+    height: 1.56,
+  );
+
+  static TextStyle bodyLargeRegularBold = _commonStyle.copyWith(
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
     height: 1.56,
   );
 
   /// bodyLargeRegular Text Style
   static TextStyle bodyLargeRegular = _commonStyle.copyWith(
     fontSize: 12,
-    fontWeight: FontWeight.w300,
+    fontWeight: FontWeight.w400,
     height: 1.56,
   );
 
   /// labelLargeBold Text Style
   static TextStyle labelLargeBold = _commonStyle.copyWith(
     fontSize: 14,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     height: 1.71,
   );
 
   /// labelLarge Text Style
   static TextStyle labelLarge = _commonStyle.copyWith(
     fontSize: 14,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w500,
     height: 1.71,
   );
 
   /// labelMedium Text Style
   static TextStyle labelMedium = _commonStyle.copyWith(
     fontSize: 12,
-    fontWeight: FontWeight.w300,
+    fontWeight: FontWeight.w400,
     height: 1.4,
   );
 
   /// labelSmall Text Style
   static TextStyle labelSmall = _commonStyle.copyWith(
     fontSize: 11,
-    fontWeight: FontWeight.w300,
+    fontWeight: FontWeight.w400,
     height: 1.2,
   );
 
