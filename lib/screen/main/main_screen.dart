@@ -14,21 +14,26 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double statusBarHeight = MediaQuery.of(context).padding.top;
+
     return Scaffold(
-      body: Consumer<IndexNavProvider>(
-        builder: (context, value, child) {
-          return switch (value.indexBottomNavBar) {
-            _ when value.indexBottomNavBar == BottomNav.home.index =>
-              const HomeScreen(),
-            _ when value.indexBottomNavBar == BottomNav.forecast.index =>
-              const ForecastScreen(),
-            _ when value.indexBottomNavBar == BottomNav.reports.index =>
-              const ReportsScreen(),
-            _ when value.indexBottomNavBar == BottomNav.products.index =>
-              const HomeScreen(),
-            _ => const HomeScreen(),
-          };
-        },
+      body: Padding(
+        padding: EdgeInsets.only(top: statusBarHeight),
+        child: Consumer<IndexNavProvider>(
+          builder: (context, value, child) {
+            return switch (value.indexBottomNavBar) {
+              _ when value.indexBottomNavBar == BottomNav.home.index =>
+                const HomeScreen(),
+              _ when value.indexBottomNavBar == BottomNav.forecast.index =>
+                const ForecastScreen(),
+              _ when value.indexBottomNavBar == BottomNav.reports.index =>
+                const ReportsScreen(),
+              _ when value.indexBottomNavBar == BottomNav.products.index =>
+                const HomeScreen(),
+              _ => const HomeScreen(),
+            };
+          },
+        ),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(

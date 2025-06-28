@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../style/color/biz_colors.dart';
+import '../../style/color/biz_colors.dart';
 
 class ShimmerCard extends StatelessWidget {
   const ShimmerCard({super.key});

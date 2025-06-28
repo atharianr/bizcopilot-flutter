@@ -4,16 +4,16 @@ import 'package:flutter_svg/svg.dart';
 import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
 
-class GradientProfitCard extends StatelessWidget {
-  final String forecast;
-  final String amount;
+class ForecastGradientCard extends StatelessWidget {
   final List<Color> colors;
+  final String title;
+  final String content;
 
-  const GradientProfitCard({
+  const ForecastGradientCard({
     super.key,
-    required this.forecast,
-    required this.amount,
     required this.colors,
+    required this.title,
+    required this.content,
   }) : assert(
          colors.length >= 2,
          'At least two colors are required for the gradient.',
@@ -30,17 +30,35 @@ class GradientProfitCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: const Color.fromRGBO(0, 0, 0, 0.15),
+            color: Color.fromRGBO(0, 0, 0, 0.15),
             blurRadius: 4,
-            offset: const Offset(0, 0),
+            offset: Offset(0, 0),
             spreadRadius: 0,
           ),
         ],
       ),
       child: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 10, left: 12, right: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset('assets/images/ic_profit_white_20.svg'),
+                const SizedBox(width: 12),
+                Text(
+                  title,
+                  style: BizTextStyles.titleLargeBold.copyWith(
+                    color: BizColors.colorWhite.getColor(context),
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ],
+            ),
+          ),
           Container(
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
@@ -58,55 +76,16 @@ class GradientProfitCard extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
-                        forecast,
-                        style: BizTextStyles.labelSmallMedium.copyWith(
+                        content,
+                        style: BizTextStyles.bodyLargeRegularBold.copyWith(
                           color: BizColors.colorWhite.getColor(context),
                         ),
                         maxLines: 3,
                       ),
                     ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 2, right: 6),
-                    child: SvgPicture.asset(
-                      'assets/images/ic_artificial_intelligence_white_12.svg',
-                      width: 8,
-                      height: 8,
-                    ),
-                  ),
                 ],
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              bottom: 8.0,
-              left: 12.0,
-              right: 12.0,
-            ),
-            child: Row(
-              children: [
-                SvgPicture.asset('assets/images/ic_profit_white_20.svg'),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    "Profit",
-                    style: BizTextStyles.titleLargeBold.copyWith(
-                      color: BizColors.colorWhite.getColor(context),
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                ),
-                Text(
-                  amount,
-                  style: BizTextStyles.titleLargeBold.copyWith(
-                    color: BizColors.colorWhite.getColor(context),
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ],
             ),
           ),
         ],

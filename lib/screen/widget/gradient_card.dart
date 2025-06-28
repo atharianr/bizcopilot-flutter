@@ -9,7 +9,7 @@ class GradientCard extends StatelessWidget {
   final String iconUri;
   final String amount;
   final String forecast;
-  final List<BizColors> colors;
+  final List<Color> colors;
 
   const GradientCard({
     super.key,
@@ -18,7 +18,10 @@ class GradientCard extends StatelessWidget {
     required this.amount,
     required this.forecast,
     required this.colors,
-  });
+  }) : assert(
+         colors.length >= 2,
+         'At least two colors are required for the gradient.',
+       );
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,7 @@ class GradientCard extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: colors.map((color) => color.getColor(context)).toList(),
+          colors: colors,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
