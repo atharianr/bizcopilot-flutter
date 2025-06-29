@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../provider/main/index_nav_provider.dart';
 import '../../static/bottom_nav/bottom_nav.dart';
 import '../../style/color/biz_colors.dart';
+import '../widget/reports/add_report_bottom_sheet.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -50,7 +51,20 @@ class MainScreen extends StatelessWidget {
           backgroundColor: BizColors.colorBackground.getColor(context),
           currentIndex: context.watch<IndexNavProvider>().indexBottomNavBar,
           onTap: (index) {
-            context.read<IndexNavProvider>().setIndexBottomNavBar = index;
+            if (index == BottomNav.add.index) {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                barrierColor: Colors.transparent,
+                // Prevents background darkening
+                builder: (context) {
+                  return AddReportBottomSheet();
+                },
+              );
+            } else {
+              context.read<IndexNavProvider>().setIndexBottomNavBar = index;
+            }
           },
           selectedItemColor: Colors.transparent,
           unselectedItemColor: Colors.transparent,

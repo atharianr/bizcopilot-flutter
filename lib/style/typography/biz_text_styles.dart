@@ -148,4 +148,11 @@ class BizTextStyles {
     fontWeight: FontWeight.w500,
     height: 1.2,
   );
+
+  /// OTHERS
+  static TextStyle button = _commonStyle.copyWith(
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    height: 1.56,
+  );
 }
