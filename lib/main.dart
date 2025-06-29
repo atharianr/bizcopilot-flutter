@@ -1,3 +1,4 @@
+import 'package:bizcopilot_flutter/provider/daily_reports/add_report_provider.dart';
 import 'package:bizcopilot_flutter/provider/daily_reports/daily_reports_provider.dart';
 import 'package:bizcopilot_flutter/provider/daily_reports/home_widgets_provider.dart';
 import 'package:bizcopilot_flutter/provider/example/example_api_provider.dart';
@@ -19,6 +20,7 @@ void main() async {
       providers: [
         Provider(create: (context) => ApiServices()),
         ChangeNotifierProvider(create: (context) => IndexNavProvider()),
+        ChangeNotifierProvider(create: (context) => AddReportProvider()),
         ChangeNotifierProvider(
           create:
               (context) => DailyReportsProvider(context.read<ApiServices>()),
