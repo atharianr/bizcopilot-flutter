@@ -14,6 +14,7 @@ class BizTextInput extends StatelessWidget {
   final EdgeInsets? scrollPadding;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
+  final String? errorText;
 
   const BizTextInput({
     super.key,
@@ -26,12 +27,14 @@ class BizTextInput extends StatelessWidget {
     this.scrollPadding,
     this.keyboardType,
     this.inputFormatters,
+    this.errorText,
   });
 
   @override
   Widget build(BuildContext context) {
     final primaryColor = BizColors.colorPrimary.getColor(context);
     final grayColor = BizColors.colorGrey.getColor(context);
+    final errorColor = BizColors.colorOrangeDark.getColor(context);
 
     OutlineInputBorder inputBorder(Color color, double width) {
       return OutlineInputBorder(
@@ -40,26 +43,38 @@ class BizTextInput extends StatelessWidget {
       );
     }
 
-    return TextField(
-      controller: controller,
-      style: BizTextStyles.bodyLargeMedium,
-      readOnly: readOnly,
-      maxLines: maxLines,
-      scrollPadding: scrollPadding ?? const EdgeInsets.all(20),
-      keyboardType: keyboardType,
-      inputFormatters: inputFormatters,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: Colors.white,
-        hintText: hintText,
-        hintStyle: TextStyle(color: grayColor),
-        floatingLabelBehavior: FloatingLabelBehavior.never,
-        border: inputBorder(grayColor, 1),
-        enabledBorder: inputBorder(grayColor, 1),
-        focusedBorder: inputBorder(primaryColor, 1.5),
-      ),
-      onChanged: onChanged,
-      onTap: onTap,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          style: BizTextStyles.bodyLargeMedium,
+          readOnly: readOnly,
+          maxLines: maxLines,
+          scrollPadding: scrollPadding ?? const EdgeInsets.all(20),
+          keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            hintText: hintText,
+            hintStyle: TextStyle(color: grayColor),
+            floatingLabelBehavior: FloatingLabelBehavior.never,
+            border: inputBorder(grayColor, 1),
+            enabledBorder: inputBorder(grayColor, 1),
+            focusedBorder: inputBorder(primaryColor, 1.5),
+            errorBorder: inputBorder(errorColor, 1.5),
+            focusedErrorBorder: inputBorder(errorColor, 1.5),
+            errorText: errorText,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+          ),
+          onChanged: onChanged,
+          onTap: onTap,
+        ),
+      ],
     );
   }
 }

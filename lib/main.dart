@@ -20,7 +20,9 @@ void main() async {
       providers: [
         Provider(create: (context) => ApiServices()),
         ChangeNotifierProvider(create: (context) => IndexNavProvider()),
-        ChangeNotifierProvider(create: (context) => AddReportProvider()),
+        ChangeNotifierProvider(
+          create: (context) => AddReportProvider(context.read<ApiServices>()),
+        ),
         ChangeNotifierProvider(
           create:
               (context) => DailyReportsProvider(context.read<ApiServices>()),

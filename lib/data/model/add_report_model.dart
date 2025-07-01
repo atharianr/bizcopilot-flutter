@@ -5,13 +5,13 @@ class AddReportModel {
   String? description;
   int? price;
   String? date;
-  ReportType? tag;
+  ReportType type;
 
   AddReportModel({
     this.name,
     this.description,
     this.price,
     this.date,
-    this.tag,
+    this.type = ReportType.sales,
   });
 }
