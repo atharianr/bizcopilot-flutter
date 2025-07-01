@@ -323,10 +323,8 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                             ),
                             onSurface: BizColors.colorBlack.getColor(context),
                           ),
-                          dialogTheme: DialogTheme(
-                            backgroundColor: BizColors.colorBackground.getColor(
-                              context,
-                            ),
+                          dialogTheme: DialogThemeData(
+                            backgroundColor: BizColors.colorBackground.color,
                           ),
                         ),
                         child: child!,

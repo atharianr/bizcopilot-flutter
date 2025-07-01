@@ -48,7 +48,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
   flutter_native_splash: ^2.4.6
   flutter_launcher_icons: ^0.14.4
 
@@ -77,6 +77,7 @@ flutter:
     - assets/images/ic_nav_reports_black_32.svg
     - assets/images/ic_nav_list_black_32.svg
     - assets/images/ic_artificial_intelligence_white_12.svg
+    - assets/images/testlistimage.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
