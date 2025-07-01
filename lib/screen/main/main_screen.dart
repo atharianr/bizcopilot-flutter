@@ -1,4 +1,7 @@
+// Project Screen:
 import 'package:bizcopilot_flutter/screen/home/home_screen.dart';
+import 'package:bizcopilot_flutter/screen/list_product/list_product.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +28,7 @@ class MainScreen extends StatelessWidget {
             _ when value.indexBottomNavBar == BottomNav.reports.index =>
               const HomeScreen(),
             _ when value.indexBottomNavBar == BottomNav.products.index =>
-              const HomeScreen(),
+              const ListProduct(),
             _ => const HomeScreen(),
           };
         },
