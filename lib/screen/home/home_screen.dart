@@ -229,11 +229,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       children: List.generate(data.length, (index) {
         final item = data[index];
-        return ListReports(
-          title: item.name ?? "",
-          description: item.description ?? "",
-          amount: CurrencyUtils.formatCurrency(item.currency, item.value ?? ""),
-          type: item.transactionType ?? "",
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: ListReports(
+            title: item.name ?? "",
+            description: item.description ?? "",
+            amount: CurrencyUtils.formatCurrency(
+              item.currency,
+              item.value ?? "",
+            ),
+            type: item.transactionType ?? "",
+          ),
         );
       }),
     );
