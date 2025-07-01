@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
+import '../../data/model/add_report_model.dart';
+import '../../provider/daily_reports/add_report_provider.dart';
 import '../../provider/main/index_nav_provider.dart';
 import '../../static/bottom_nav/bottom_nav.dart';
 import '../../style/color/biz_colors.dart';
@@ -40,7 +42,7 @@ class MainScreen extends StatelessWidget {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.15),
+              color: const Color.fromRGBO(0, 0, 0, 0.15),
               blurRadius: 16,
               offset: const Offset(0, 0),
               spreadRadius: 0,
@@ -52,16 +54,17 @@ class MainScreen extends StatelessWidget {
           currentIndex: context.watch<IndexNavProvider>().indexBottomNavBar,
           onTap: (index) {
             if (index == BottomNav.add.index) {
+              final provider = context.read<AddReportProvider>();
+
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
-                barrierColor: Colors.transparent,
-                // Prevents background darkening
-                builder: (context) {
-                  return AddReportBottomSheet();
-                },
-              );
+                // barrierColor: Colors.transparent,
+                builder: (context) => const AddReportBottomSheet(),
+              ).then((_) {
+                provider.setReportModel = AddReportModel();
+              });
             } else {
               context.read<IndexNavProvider>().setIndexBottomNavBar = index;
             }
@@ -147,7 +150,6 @@ class MainScreen extends StatelessWidget {
         child: SvgPicture.asset(
           iconPath,
           colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-          // Color will be overridden by ShaderMask
           width: 32,
           height: 32,
         ),

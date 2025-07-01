@@ -1,4 +1,5 @@
 import 'package:bizcopilot_flutter/constant/constant.dart';
+import 'package:bizcopilot_flutter/data/model/request/add_report_request.dart';
 import 'package:bizcopilot_flutter/data/model/request/example_request.dart';
 import 'package:bizcopilot_flutter/data/model/response/daily_reports_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/example_response.dart';
@@ -24,6 +25,17 @@ class ApiServices {
       url: uri,
       headers: {"Content-Type": "application/json"},
       parser: (json) => DailyReportsResponse.fromJson(json),
+    );
+  }
+
+  Future<ExampleResponse> addReport(AddReportRequest request) {
+    final uri = Uri.parse("${Constant.baseUrl}/add-report");
+
+    return BaseNetwork.post<ExampleResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      body: request.toJson(),
+      parser: (json) => ExampleResponse.fromJson(json),
     );
   }
 

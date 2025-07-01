@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../../provider/daily_reports/add_report_provider.dart';
 import '../../../static/reports/report_type.dart';
+import '../../../static/state/add_report_result_state.dart';
 import '../../../style/color/biz_colors.dart';
 import '../biz_drop_down.dart';
 import '../biz_radio_button.dart';
@@ -23,7 +24,6 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
   late TextEditingController descriptionController;
   late TextEditingController priceController;
   late TextEditingController dateController;
-  // String? salesCategory;
 
   final List<String> salesCategories = ["Food", "Drink", "Snack"];
 
@@ -40,7 +40,6 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
       text: model.price != null ? model.price.toString() : '',
     );
     dateController = TextEditingController(text: model.date ?? '');
-    // salesCategory = model.name;
   }
 
   @override
@@ -113,7 +112,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   BizRadioButton(
                     label: "Sales",
                     value: ReportType.sales,
-                    selectedTag: model.type ?? ReportType.sales,
+                    selectedTag: model.type,
                     onTap: () {
                       provider.setReportModel = AddReportModel(
                         name: null,
@@ -128,7 +127,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   BizRadioButton(
                     label: "Expenses",
                     value: ReportType.expenses,
-                    selectedTag: model.type ?? ReportType.sales,
+                    selectedTag: model.type,
                     onTap: () {
                       provider.setReportModel = AddReportModel(
                         name: null,
@@ -156,7 +155,6 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   hintText: "Product",
                   items: salesCategories,
                   onChanged: (value) {
-                    // salesCategory = value;
                     provider.setReportModel = AddReportModel(
                       name: value,
                       description: null,
@@ -292,23 +290,37 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                 },
               ),
               const SizedBox(height: 20),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all(primaryColor),
                   ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    // Submit logic
-                  },
-                  child: Text(
-                    "Add Report",
-                    style: BizTextStyles.button.copyWith(
-                      color: BizColors.colorWhite.getColor(context),
-                    ),
-                  ),
+                  onPressed:
+                      provider.resultState is AddReportLoadingState
+                          ? null // Disable while loading
+                          : () async {
+                            await provider.addReport();
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                          },
+                  child:
+                      provider.resultState is AddReportLoadingState
+                          ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: BizColors.colorWhite.getColor(context),
+                              strokeWidth: 2,
+                            ),
+                          )
+                          : Text(
+                            "Add Report",
+                            style: BizTextStyles.button.copyWith(
+                              color: BizColors.colorWhite.getColor(context),
+                            ),
+                          ),
                 ),
               ),
             ],
