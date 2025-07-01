@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
@@ -11,6 +12,8 @@ class BizTextInput extends StatelessWidget {
   final VoidCallback? onTap;
   final int? maxLines;
   final EdgeInsets? scrollPadding;
+  final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
 
   const BizTextInput({
     super.key,
@@ -21,6 +24,8 @@ class BizTextInput extends StatelessWidget {
     this.onTap,
     this.maxLines = 1,
     this.scrollPadding,
+    this.keyboardType,
+    this.inputFormatters,
   });
 
   @override
@@ -41,6 +46,8 @@ class BizTextInput extends StatelessWidget {
       readOnly: readOnly,
       maxLines: maxLines,
       scrollPadding: scrollPadding ?? const EdgeInsets.all(20),
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,

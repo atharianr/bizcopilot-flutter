@@ -1,6 +1,7 @@
 import 'package:bizcopilot_flutter/data/model/add_report_model.dart';
 import 'package:bizcopilot_flutter/style/typography/biz_text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../provider/daily_reports/add_report_provider.dart';
@@ -19,6 +20,7 @@ class AddReportBottomSheet extends StatefulWidget {
 class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
   late TextEditingController nameController;
   late TextEditingController descriptionController;
+  late TextEditingController priceController;
   late TextEditingController dateController;
 
   @override
@@ -30,6 +32,9 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
     descriptionController = TextEditingController(
       text: model.description ?? '',
     );
+    priceController = TextEditingController(
+      text: model.price != null ? model.price.toString() : '',
+    );
     dateController = TextEditingController(text: model.date ?? '');
   }
 
@@ -37,6 +42,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
   void dispose() {
     nameController.dispose();
     descriptionController.dispose();
+    priceController.dispose();
     dateController.dispose();
     super.dispose();
   }
@@ -105,6 +111,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                       provider.setReportModel = AddReportModel(
                         name: model.name,
                         description: model.description,
+                        price: model.price,
                         date: model.date,
                         tag: ReportType.sales,
                       );
@@ -119,6 +126,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                       provider.setReportModel = AddReportModel(
                         name: model.name,
                         description: model.description,
+                        price: model.price,
                         date: model.date,
                         tag: ReportType.expenses,
                       );
@@ -142,6 +150,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   provider.setReportModel = AddReportModel(
                     name: value,
                     description: model.description,
+                    price: model.price,
                     date: model.date,
                     tag: model.tag,
                   );
@@ -165,6 +174,31 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   provider.setReportModel = AddReportModel(
                     name: model.name,
                     description: value,
+                    price: model.price,
+                    date: model.date,
+                    tag: model.tag,
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+
+              Text(
+                "Price",
+                style: BizTextStyles.bodyLargeMedium.copyWith(
+                  color: blackColor,
+                ),
+              ),
+              const SizedBox(height: 8),
+              BizTextInput(
+                hintText: "Price",
+                controller: priceController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                onChanged: (value) {
+                  provider.setReportModel = AddReportModel(
+                    name: model.name,
+                    description: model.description,
+                    price: int.tryParse(value),
                     date: model.date,
                     tag: model.tag,
                   );
@@ -218,6 +252,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                     provider.setReportModel = AddReportModel(
                       name: model.name,
                       description: model.description,
+                      price: model.price,
                       date: formattedDate,
                       tag: model.tag,
                     );
