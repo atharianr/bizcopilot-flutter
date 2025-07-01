@@ -21,7 +21,7 @@ class ListReports extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Container(
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
