@@ -8,6 +8,7 @@ class BizDropDown extends StatelessWidget {
   final String hintText;
   final List<String> items;
   final ValueChanged<String?> onChanged;
+  final String? errorText;
 
   const BizDropDown({
     super.key,
@@ -15,12 +16,14 @@ class BizDropDown extends StatelessWidget {
     required this.hintText,
     required this.items,
     required this.onChanged,
+    this.errorText,
   });
 
   @override
   Widget build(BuildContext context) {
     final primaryColor = BizColors.colorPrimary.getColor(context);
     final grayColor = BizColors.colorGrey.getColor(context);
+    final errorColor = BizColors.colorOrangeDark.getColor(context);
 
     OutlineInputBorder inputBorder(Color color, double width) {
       return OutlineInputBorder(
@@ -58,6 +61,9 @@ class BizDropDown extends StatelessWidget {
         border: inputBorder(grayColor, 1),
         enabledBorder: inputBorder(grayColor, 1),
         focusedBorder: inputBorder(primaryColor, 1.5),
+        errorBorder: inputBorder(errorColor, 1.5),
+        focusedErrorBorder: inputBorder(errorColor, 1.5),
+        errorText: errorText,
       ),
     );
   }

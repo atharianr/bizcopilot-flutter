@@ -26,6 +26,11 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
   late TextEditingController dateController;
 
   final List<String> salesCategories = ["Food", "Drink", "Snack"];
+  String? nameError;
+  String? descriptionError;
+  String? priceError;
+  String? productError;
+  String? dateError;
 
   @override
   void initState() {
@@ -49,6 +54,43 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
     priceController.dispose();
     dateController.dispose();
     super.dispose();
+  }
+
+  bool validateInputs(AddReportModel model) {
+    bool isValid = true;
+    setState(() {
+      nameError = null;
+      descriptionError = null;
+      priceError = null;
+      productError = null;
+      dateError = null;
+
+      if (model.type == ReportType.sales) {
+        if (model.name == null || model.name!.isEmpty) {
+          productError = "Please select a product";
+          isValid = false;
+        }
+      } else {
+        if (nameController.text.isEmpty) {
+          nameError = "Name is required";
+          isValid = false;
+        }
+        if (descriptionController.text.isEmpty) {
+          descriptionError = "Description is required";
+          isValid = false;
+        }
+        if (priceController.text.isEmpty) {
+          priceError = "Price is required";
+          isValid = false;
+        }
+      }
+
+      if (dateController.text.isEmpty) {
+        dateError = "Date is required";
+        isValid = false;
+      }
+    });
+    return isValid;
   }
 
   @override
@@ -121,6 +163,12 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                         date: model.date,
                         type: ReportType.sales,
                       );
+                      setState(() {
+                        nameError = null;
+                        descriptionError = null;
+                        priceError = null;
+                        productError = null;
+                      });
                     },
                   ),
                   const SizedBox(width: 12),
@@ -136,6 +184,12 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                         date: model.date,
                         type: ReportType.expenses,
                       );
+                      setState(() {
+                        nameError = null;
+                        descriptionError = null;
+                        priceError = null;
+                        productError = null;
+                      });
                     },
                   ),
                 ],
@@ -163,6 +217,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                       type: ReportType.sales,
                     );
                   },
+                  errorText: productError,
                 ),
               ] else ...[
                 Text(
@@ -175,6 +230,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                 BizTextInput(
                   hintText: "Name",
                   controller: nameController,
+                  errorText: nameError,
                   onChanged: (value) {
                     provider.setReportModel = AddReportModel(
                       name: value,
@@ -199,6 +255,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   controller: descriptionController,
                   maxLines: 4,
                   scrollPadding: const EdgeInsets.all(20),
+                  errorText: descriptionError,
                   onChanged: (value) {
                     provider.setReportModel = AddReportModel(
                       name: model.name,
@@ -223,6 +280,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   controller: priceController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  errorText: priceError,
                   onChanged: (value) {
                     provider.setReportModel = AddReportModel(
                       name: model.name,
@@ -247,6 +305,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                 hintText: "Date",
                 controller: dateController,
                 readOnly: true,
+                errorText: dateError,
                 onTap: () async {
                   DateTime? pickedDate = await showDatePicker(
                     context: context,
@@ -298,11 +357,15 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   ),
                   onPressed:
                       provider.resultState is AddReportLoadingState
-                          ? null // Disable while loading
+                          ? null
                           : () async {
-                            await provider.addReport();
-                            if (context.mounted) {
-                              Navigator.pop(context);
+                            if (validateInputs(
+                              provider.addReportModel ?? AddReportModel(),
+                            )) {
+                              await provider.addReport();
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                              }
                             }
                           },
                   child:
