@@ -59,6 +59,13 @@ class BizTextStyles {
     height: 1.2,
   );
 
+  /// titleMediumBold Text Style
+  static TextStyle titleMediumBold = _commonStyle.copyWith(
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
+    height: 1.2,
+  );
+
   /// titleMedium Text Style
   static TextStyle titleMedium = _commonStyle.copyWith(
     fontSize: 16,
