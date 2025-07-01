@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../provider/daily_reports/add_report_provider.dart';
 import '../../../static/reports/report_type.dart';
 import '../../../style/color/biz_colors.dart';
+import '../biz_drop_down.dart';
 import '../biz_radio_button.dart';
 import '../biz_text_input.dart';
 
@@ -22,6 +23,9 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
   late TextEditingController descriptionController;
   late TextEditingController priceController;
   late TextEditingController dateController;
+  // String? salesCategory;
+
+  final List<String> salesCategories = ["Food", "Drink", "Snack"];
 
   @override
   void initState() {
@@ -36,6 +40,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
       text: model.price != null ? model.price.toString() : '',
     );
     dateController = TextEditingController(text: model.date ?? '');
+    // salesCategory = model.name;
   }
 
   @override
@@ -54,6 +59,8 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
     final primaryColor = BizColors.colorPrimary.getColor(context);
     final grayColor = BizColors.colorGrey.getColor(context);
     final blackColor = BizColors.colorBlack.getColor(context);
+
+    bool isSales = model.type == ReportType.sales;
 
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 72),
@@ -106,14 +113,14 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   BizRadioButton(
                     label: "Sales",
                     value: ReportType.sales,
-                    selectedTag: model.tag ?? ReportType.sales,
+                    selectedTag: model.type ?? ReportType.sales,
                     onTap: () {
                       provider.setReportModel = AddReportModel(
-                        name: model.name,
-                        description: model.description,
-                        price: model.price,
+                        name: null,
+                        description: null,
+                        price: null,
                         date: model.date,
-                        tag: ReportType.sales,
+                        type: ReportType.sales,
                       );
                     },
                   ),
@@ -121,14 +128,14 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   BizRadioButton(
                     label: "Expenses",
                     value: ReportType.expenses,
-                    selectedTag: model.tag ?? ReportType.sales,
+                    selectedTag: model.type ?? ReportType.sales,
                     onTap: () {
                       provider.setReportModel = AddReportModel(
-                        name: model.name,
-                        description: model.description,
-                        price: model.price,
+                        name: null,
+                        description: null,
+                        price: null,
                         date: model.date,
-                        tag: ReportType.expenses,
+                        type: ReportType.expenses,
                       );
                     },
                   ),
@@ -136,76 +143,101 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
               ),
               const SizedBox(height: 12),
 
-              Text(
-                "Report Name",
-                style: BizTextStyles.bodyLargeMedium.copyWith(
-                  color: blackColor,
+              if (isSales) ...[
+                Text(
+                  "Product",
+                  style: BizTextStyles.bodyLargeMedium.copyWith(
+                    color: blackColor,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              BizTextInput(
-                hintText: "Name",
-                controller: nameController,
-                onChanged: (value) {
-                  provider.setReportModel = AddReportModel(
-                    name: value,
-                    description: model.description,
-                    price: model.price,
-                    date: model.date,
-                    tag: model.tag,
-                  );
-                },
-              ),
-              const SizedBox(height: 12),
-
-              Text(
-                "Description",
-                style: BizTextStyles.bodyLargeMedium.copyWith(
-                  color: blackColor,
+                const SizedBox(height: 8),
+                BizDropDown(
+                  value: model.name,
+                  hintText: "Product",
+                  items: salesCategories,
+                  onChanged: (value) {
+                    // salesCategory = value;
+                    provider.setReportModel = AddReportModel(
+                      name: value,
+                      description: null,
+                      price: null,
+                      date: model.date,
+                      type: ReportType.sales,
+                    );
+                  },
                 ),
-              ),
-              const SizedBox(height: 8),
-              BizTextInput(
-                hintText: "Description",
-                controller: descriptionController,
-                maxLines: 4,
-                scrollPadding: const EdgeInsets.all(20),
-                onChanged: (value) {
-                  provider.setReportModel = AddReportModel(
-                    name: model.name,
-                    description: value,
-                    price: model.price,
-                    date: model.date,
-                    tag: model.tag,
-                  );
-                },
-              ),
-              const SizedBox(height: 12),
-
-              Text(
-                "Price",
-                style: BizTextStyles.bodyLargeMedium.copyWith(
-                  color: blackColor,
+              ] else ...[
+                Text(
+                  "Report Name",
+                  style: BizTextStyles.bodyLargeMedium.copyWith(
+                    color: blackColor,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              BizTextInput(
-                hintText: "Price",
-                controller: priceController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                onChanged: (value) {
-                  provider.setReportModel = AddReportModel(
-                    name: model.name,
-                    description: model.description,
-                    price: int.tryParse(value),
-                    date: model.date,
-                    tag: model.tag,
-                  );
-                },
-              ),
-              const SizedBox(height: 12),
+                const SizedBox(height: 8),
+                BizTextInput(
+                  hintText: "Name",
+                  controller: nameController,
+                  onChanged: (value) {
+                    provider.setReportModel = AddReportModel(
+                      name: value,
+                      description: model.description,
+                      price: model.price,
+                      date: model.date,
+                      type: model.type,
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
 
+                Text(
+                  "Description",
+                  style: BizTextStyles.bodyLargeMedium.copyWith(
+                    color: blackColor,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                BizTextInput(
+                  hintText: "Description",
+                  controller: descriptionController,
+                  maxLines: 4,
+                  scrollPadding: const EdgeInsets.all(20),
+                  onChanged: (value) {
+                    provider.setReportModel = AddReportModel(
+                      name: model.name,
+                      description: value,
+                      price: model.price,
+                      date: model.date,
+                      type: model.type,
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                Text(
+                  "Price",
+                  style: BizTextStyles.bodyLargeMedium.copyWith(
+                    color: blackColor,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                BizTextInput(
+                  hintText: "Price",
+                  controller: priceController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  onChanged: (value) {
+                    provider.setReportModel = AddReportModel(
+                      name: model.name,
+                      description: model.description,
+                      price: int.tryParse(value),
+                      date: model.date,
+                      type: model.type,
+                    );
+                  },
+                ),
+              ],
+
+              const SizedBox(height: 12),
               Text(
                 "Date",
                 style: BizTextStyles.bodyLargeMedium.copyWith(
@@ -254,7 +286,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                       description: model.description,
                       price: model.price,
                       date: formattedDate,
-                      tag: model.tag,
+                      type: model.type,
                     );
                   }
                 },
