@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../../style/color/biz_colors.dart';
 import '../../../style/typography/biz_text_styles.dart';
 
+import '../../static/navigation/navigation_route.dart';
 import '../widget/gradient_button.dart';
 
 class ListProduct extends StatefulWidget {
@@ -17,17 +18,17 @@ class ListProduct extends StatefulWidget {
 
 class _ListProductState extends State<ListProduct> {
     final tempData = [
-        ProductModel(title: "Shibal Sekiya", 
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", 
-        price: "Rp. 696969...", 
+        ProductModel(title: "Shibal Sekiya",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        price: "Rp. 696969...",
         image: "assets/images/testlistimage.png"),
-        ProductModel(title: "Shibal Sekiya", 
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", 
-        price: "Rp. 696969...", 
+        ProductModel(title: "Shibal Sekiya",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        price: "Rp. 696969...",
         image: "assets/images/testlistimage.png"),
-        ProductModel(title: "Shibal Sekiya", 
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", 
-        price: "Rp. 696969...", 
+        ProductModel(title: "Shibal Sekiya",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        price: "Rp. 696969...",
         image: "assets/images/testlistimage.png")
     ];
 
@@ -39,7 +40,7 @@ class _ListProductState extends State<ListProduct> {
         body: Padding(
           padding: EdgeInsets.only(top: statusBarHeight + 24, left: 24, right: 24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, 
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -66,7 +67,12 @@ class _ListProductState extends State<ListProduct> {
                         offset: Offset(0, 0),
                       ),
                     ],
-                    onPressed: () => print('Share tapped'),
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        NavigationRoute.addProductRoute.name,
+                      );
+                    },
                   ),
                 ],
               ),
@@ -130,7 +136,7 @@ class ListProductCell extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: 
+                      child:
                         Column(crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text("${product.title}",
