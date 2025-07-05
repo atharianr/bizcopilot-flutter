@@ -6,6 +6,7 @@ import 'package:bizcopilot_flutter/data/model/response/add_sale_report_response.
 import 'package:bizcopilot_flutter/data/model/response/daily_reports_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/example_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/home_widgets_response.dart';
+import 'package:bizcopilot_flutter/data/model/response/product_response.dart';
 
 import 'utils/base_network.dart';
 
@@ -65,5 +66,13 @@ class ApiServices {
   }
 
   /// Products API
-  // Future<>
+  Future<DataProductResponseModel> getAllProducts() {
+    final uri = Uri.parse("${Constant.baseUrl}/product");
+
+    return BaseNetwork.get<DataProductResponseModel>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      parser: (json) => DataProductResponseModel.fromJson(json),
+    );
+  }
 }
