@@ -8,7 +8,7 @@ import '../../../style/color/biz_colors.dart';
 import '../../../style/typography/biz_text_styles.dart';
 
 import '../widget/gradient_button.dart';
-import '../product_detail/product_detail_bottom_sheet.dart';
+// import '../product_detail/product_detail_bottom_sheet.dart';
 
 // Provider
 import '../../provider/list_product/list_product_provider.dart';
@@ -161,12 +161,12 @@ Widget _listProductView(List<Products> allProducts) {
               product: itemData, 
               spacePadding: spacePadding, 
               onPressed: () {
-                showModalBottomSheet<dynamic>(
-                  context: context, 
-                  isScrollControlled: true,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-                  builder: (context) => ProductDetailBottomSheet(product: itemData)
-                );
+                // showModalBottomSheet<dynamic>(
+                //   context: context,
+                //   isScrollControlled: true,
+                //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+                //   builder: (context) => ProductDetailBottomSheet(product: itemData)
+                // );
               },
             );
         }
