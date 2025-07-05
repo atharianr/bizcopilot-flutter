@@ -1,31 +1,31 @@
-// import 'package:bizcopilot_flutter/utils/extension_utils.dart';
-// import 'package:flutter/widgets.dart';
+import 'package:bizcopilot_flutter/utils/extension_utils.dart';
+import 'package:flutter/widgets.dart';
 
-// import '../../data/api/api_service.dart';
-// import '../../static/state/daily_reports_result_state.dart';
+import '../../data/api/api_service.dart';
+import '../../static/state/list_product_result_state.dart';
 
-// class ListProductProvider extends ChangeNotifier {
-//   final ApiServices _apiServices;
+class ListProductProvider extends ChangeNotifier {
+  final ApiServices _apiServices;
 
-//   ListProductProvider(this._apiServices);
+  ListProductProvider(this._apiServices);
 
-//   ListProductProvider _resultState = ListProductProvider();
+  ListProductResultState _resultState = ListProductNoneState();
 
-//   ListProductProvider get resultState => _resultState;
+  ListProductResultState get resultState => _resultState;
 
-//   Future<void> getAllProducts() async {
-//     try {
-//       _resultState = ListProductProvider();
-//       notifyListeners();
+  Future<void> getAllListProducts() async {
+    try {
+      _resultState = ListProductLoadingState();
+      notifyListeners();
 
-//       final result = await _apiServices.getDailyReports();
-//       _resultState = ListProductProvider(
-//         result.data?.getDailyReports?.dailyReports ?? [],
-//       );
-//       notifyListeners();
-//     } catch (e) {
-//       _resultState = ListProductProvider(e.getMessage());
-//       notifyListeners();
-//     }
-//   }
-// }
+      final result = await _apiServices.getAllProducts();
+      _resultState = ListProductLoadedState(
+        result.data?.getAllProducts?.products ?? [],
+      );
+      notifyListeners();
+    } catch (e) {
+      _resultState = ListProductErrorState(e.getMessage());
+      notifyListeners();
+    }
+  }
+}
