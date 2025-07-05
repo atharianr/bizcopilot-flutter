@@ -1,3 +1,3 @@
 class Constant {
-  static const String baseUrl = "https://bizcopilot.bism.app/api";
+  static const String baseUrl = "https://bizcopilot.bism.app/";
 }

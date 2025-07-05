@@ -1,6 +1,8 @@
 import 'package:bizcopilot_flutter/constant/constant.dart';
 import 'package:bizcopilot_flutter/data/model/request/add_report_request.dart';
+import 'package:bizcopilot_flutter/data/model/request/add_sale_report_request.dart';
 import 'package:bizcopilot_flutter/data/model/request/example_request.dart';
+import 'package:bizcopilot_flutter/data/model/response/add_sale_report_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/daily_reports_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/example_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/home_widgets_response.dart';
@@ -37,6 +39,17 @@ class ApiServices {
       body: request.toJson(),
       parser: (json) => ExampleResponse.fromJson(json),
     );
+  }
+
+  Future<AddSaleReportResponse> addSaleReport(AddSaleReportRequest request) {
+    final uri = Uri.parse("${Constant.baseUrl}/sale");
+    final response = BaseNetwork.post<AddSaleReportResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      body: request.toJson(),
+      parser: (json) => AddSaleReportResponse.fromJson(json),
+    );
+    return response;
   }
 
   Future<ExampleResponse> exampleApiHit(String id, String name, String review) {
