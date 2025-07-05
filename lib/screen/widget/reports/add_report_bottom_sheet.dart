@@ -5,12 +5,15 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../provider/daily_reports/add_report_provider.dart';
+import '../../../provider/list_product/list_product_provider.dart';
 import '../../../static/reports/report_type.dart';
 import '../../../static/state/add_report_result_state.dart';
+import '../../../static/state/list_product_result_state.dart';
 import '../../../style/color/biz_colors.dart';
 import '../biz_drop_down.dart';
 import '../biz_radio_button.dart';
 import '../biz_text_input.dart';
+import '../shimmer_card.dart';
 
 class AddReportBottomSheet extends StatefulWidget {
   const AddReportBottomSheet({super.key});
@@ -25,7 +28,6 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
   late TextEditingController priceController;
   late TextEditingController dateController;
 
-  final List<String> salesCategories = ["Food", "Drink", "Snack"];
   String? nameError;
   String? descriptionError;
   String? priceError;
@@ -37,12 +39,17 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
     super.initState();
     final model =
         context.read<AddReportProvider>().addReportModel ?? AddReportModel();
+    Provider.of<ListProductProvider>(
+      context,
+      listen: false,
+    ).getAllListProducts();
+
     nameController = TextEditingController(text: model.name ?? '');
     descriptionController = TextEditingController(
       text: model.description ?? '',
     );
     priceController = TextEditingController(
-      text: model.price != null ? model.price.toString() : '',
+      text: model.price?.toString() ?? '',
     );
     dateController = TextEditingController(text: model.date ?? '');
   }
@@ -96,12 +103,23 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AddReportProvider>(context);
+    final productProvider = Provider.of<ListProductProvider>(context);
     final model = provider.addReportModel ?? AddReportModel();
+
     final primaryColor = BizColors.colorPrimary.getColor(context);
     final grayColor = BizColors.colorGrey.getColor(context);
     final blackColor = BizColors.colorBlack.getColor(context);
 
     bool isSales = model.type == ReportType.sales;
+
+    // Extract product list
+    final List<String> productList =
+        productProvider.resultState is ListProductLoadedState
+            ? (productProvider.resultState as ListProductLoadedState).data
+                .map((e) => e.name ?? '')
+                .toList()
+                .cast<String>()
+            : <String>[];
 
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 72),
@@ -111,7 +129,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: BizColors.colorBlack.getColor(context).withOpacity(0.2),
+              color: blackColor.withOpacity(0.2),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -204,21 +222,23 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                BizDropDown(
-                  value: model.name,
-                  hintText: "Product",
-                  items: salesCategories,
-                  onChanged: (value) {
-                    provider.setReportModel = AddReportModel(
-                      name: value,
-                      description: null,
-                      price: null,
-                      date: model.date,
-                      type: ReportType.sales,
-                    );
-                  },
-                  errorText: productError,
-                ),
+                productProvider.resultState is ListProductLoadingState
+                    ? const ShimmerCard(height: 48)
+                    : BizDropDown(
+                      value: model.name,
+                      hintText: "Product",
+                      items: productList,
+                      onChanged: (value) {
+                        provider.setReportModel = AddReportModel(
+                          name: value,
+                          description: null,
+                          price: null,
+                          date: model.date,
+                          type: ReportType.sales,
+                        );
+                      },
+                      errorText: productError,
+                    ),
               ] else ...[
                 Text(
                   "Report Name",
@@ -321,7 +341,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                             surface: BizColors.colorBackground.getColor(
                               context,
                             ),
-                            onSurface: BizColors.colorBlack.getColor(context),
+                            onSurface: blackColor,
                           ),
                           dialogTheme: DialogThemeData(
                             backgroundColor: BizColors.colorBackground.color,
