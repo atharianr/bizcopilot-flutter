@@ -7,7 +7,7 @@ class BizDropDown extends StatelessWidget {
   final String? value;
   final String hintText;
   final List<String> items;
-  final ValueChanged<String?> onChanged;
+  final void Function(int index, String? value) onChanged;
   final String? errorText;
 
   const BizDropDown({
@@ -36,18 +36,21 @@ class BizDropDown extends StatelessWidget {
       value: value?.isNotEmpty == true ? value : null,
       hint: Text(hintText, style: TextStyle(color: grayColor)),
       items:
-          items.map((category) {
+          items.map((item) {
             return DropdownMenuItem(
-              value: category,
+              value: item,
               child: Text(
-                category,
+                item,
                 style: BizTextStyles.bodyLargeMedium.copyWith(
                   color: BizColors.colorText.getColor(context),
                 ),
               ),
             );
           }).toList(),
-      onChanged: onChanged,
+      onChanged: (selectedValue) {
+        final index = items.indexOf(selectedValue ?? '');
+        onChanged(index, selectedValue);
+      },
       style: BizTextStyles.bodyLargeMedium.copyWith(
         color: BizColors.colorText.getColor(context),
       ),

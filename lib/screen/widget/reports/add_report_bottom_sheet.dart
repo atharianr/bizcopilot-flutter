@@ -1,16 +1,20 @@
 import 'package:bizcopilot_flutter/data/model/add_report_model.dart';
+import 'package:bizcopilot_flutter/data/model/response/product_response.dart';
 import 'package:bizcopilot_flutter/style/typography/biz_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../provider/daily_reports/add_report_provider.dart';
+import '../../../provider/list_product/list_product_provider.dart';
 import '../../../static/reports/report_type.dart';
 import '../../../static/state/add_report_result_state.dart';
+import '../../../static/state/list_product_result_state.dart';
 import '../../../style/color/biz_colors.dart';
 import '../biz_drop_down.dart';
 import '../biz_radio_button.dart';
 import '../biz_text_input.dart';
+import '../shimmer_card.dart';
 
 class AddReportBottomSheet extends StatefulWidget {
   const AddReportBottomSheet({super.key});
@@ -25,24 +29,25 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
   late TextEditingController priceController;
   late TextEditingController dateController;
 
-  final List<String> salesCategories = ["Food", "Drink", "Snack"];
-  String? nameError;
-  String? descriptionError;
-  String? priceError;
-  String? productError;
-  String? dateError;
-
   @override
   void initState() {
     super.initState();
     final model =
         context.read<AddReportProvider>().addReportModel ?? AddReportModel();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ListProductProvider>(
+        context,
+        listen: false,
+      ).getAllListProducts();
+    });
+
     nameController = TextEditingController(text: model.name ?? '');
     descriptionController = TextEditingController(
       text: model.description ?? '',
     );
     priceController = TextEditingController(
-      text: model.price != null ? model.price.toString() : '',
+      text: model.price?.toString() ?? '',
     );
     dateController = TextEditingController(text: model.date ?? '');
   }
@@ -56,52 +61,22 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
     super.dispose();
   }
 
-  bool validateInputs(AddReportModel model) {
-    bool isValid = true;
-    setState(() {
-      nameError = null;
-      descriptionError = null;
-      priceError = null;
-      productError = null;
-      dateError = null;
-
-      if (model.type == ReportType.sales) {
-        if (model.name == null || model.name!.isEmpty) {
-          productError = "Please select a product";
-          isValid = false;
-        }
-      } else {
-        if (nameController.text.isEmpty) {
-          nameError = "Name is required";
-          isValid = false;
-        }
-        if (descriptionController.text.isEmpty) {
-          descriptionError = "Description is required";
-          isValid = false;
-        }
-        if (priceController.text.isEmpty) {
-          priceError = "Price is required";
-          isValid = false;
-        }
-      }
-
-      if (dateController.text.isEmpty) {
-        dateError = "Date is required";
-        isValid = false;
-      }
-    });
-    return isValid;
-  }
-
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AddReportProvider>(context);
+    final productProvider = Provider.of<ListProductProvider>(context);
     final model = provider.addReportModel ?? AddReportModel();
+
     final primaryColor = BizColors.colorPrimary.getColor(context);
     final grayColor = BizColors.colorGrey.getColor(context);
     final blackColor = BizColors.colorBlack.getColor(context);
 
     bool isSales = model.type == ReportType.sales;
+
+    final List<Products> productList =
+        productProvider.resultState is ListProductLoadedState
+            ? (productProvider.resultState as ListProductLoadedState).data
+            : <Products>[];
 
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 72),
@@ -111,7 +86,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: BizColors.colorBlack.getColor(context).withOpacity(0.2),
+              color: blackColor.withOpacity(0.2),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -156,19 +131,8 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                     value: ReportType.sales,
                     selectedTag: model.type,
                     onTap: () {
-                      provider.setReportModel = AddReportModel(
-                        name: null,
-                        description: null,
-                        price: null,
-                        date: model.date,
-                        type: ReportType.sales,
-                      );
-                      setState(() {
-                        nameError = null;
-                        descriptionError = null;
-                        priceError = null;
-                        productError = null;
-                      });
+                      provider.resetSaleReportModel();
+                      provider.resetErrors();
                     },
                   ),
                   const SizedBox(width: 12),
@@ -177,19 +141,8 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                     value: ReportType.expenses,
                     selectedTag: model.type,
                     onTap: () {
-                      provider.setReportModel = AddReportModel(
-                        name: null,
-                        description: null,
-                        price: null,
-                        date: model.date,
-                        type: ReportType.expenses,
-                      );
-                      setState(() {
-                        nameError = null;
-                        descriptionError = null;
-                        priceError = null;
-                        productError = null;
-                      });
+                      provider.resetExpenseReportModel();
+                      provider.resetErrors();
                     },
                   ),
                 ],
@@ -204,21 +157,28 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                BizDropDown(
-                  value: model.name,
-                  hintText: "Product",
-                  items: salesCategories,
-                  onChanged: (value) {
-                    provider.setReportModel = AddReportModel(
-                      name: value,
-                      description: null,
-                      price: null,
-                      date: model.date,
-                      type: ReportType.sales,
-                    );
-                  },
-                  errorText: productError,
-                ),
+                productProvider.resultState is ListProductLoadingState
+                    ? const ShimmerCard(height: 48)
+                    : BizDropDown(
+                      value: model.name,
+                      hintText: "Product",
+                      items:
+                          productList
+                              .map((e) => e.name ?? '')
+                              .toList()
+                              .cast<String>(),
+                      onChanged: (index, value) {
+                        provider.setReportModel = AddReportModel(
+                          name: value,
+                          description: model.description,
+                          price: model.price,
+                          product: productList[index],
+                          date: model.date,
+                          type: ReportType.sales,
+                        );
+                      },
+                      errorText: provider.productError,
+                    ),
               ] else ...[
                 Text(
                   "Report Name",
@@ -230,12 +190,13 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                 BizTextInput(
                   hintText: "Name",
                   controller: nameController,
-                  errorText: nameError,
+                  errorText: provider.nameError,
                   onChanged: (value) {
                     provider.setReportModel = AddReportModel(
                       name: value,
                       description: model.description,
                       price: model.price,
+                      product: model.product,
                       date: model.date,
                       type: model.type,
                     );
@@ -255,12 +216,13 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   controller: descriptionController,
                   maxLines: 4,
                   scrollPadding: const EdgeInsets.all(20),
-                  errorText: descriptionError,
+                  errorText: provider.descriptionError,
                   onChanged: (value) {
                     provider.setReportModel = AddReportModel(
                       name: model.name,
                       description: value,
                       price: model.price,
+                      product: model.product,
                       date: model.date,
                       type: model.type,
                     );
@@ -280,12 +242,13 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   controller: priceController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  errorText: priceError,
+                  errorText: provider.priceError,
                   onChanged: (value) {
                     provider.setReportModel = AddReportModel(
                       name: model.name,
                       description: model.description,
                       price: int.tryParse(value),
+                      product: model.product,
                       date: model.date,
                       type: model.type,
                     );
@@ -305,7 +268,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                 hintText: "Date",
                 controller: dateController,
                 readOnly: true,
-                errorText: dateError,
+                errorText: provider.dateError,
                 onTap: () async {
                   DateTime? pickedDate = await showDatePicker(
                     context: context,
@@ -321,7 +284,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                             surface: BizColors.colorBackground.getColor(
                               context,
                             ),
-                            onSurface: BizColors.colorBlack.getColor(context),
+                            onSurface: blackColor,
                           ),
                           dialogTheme: DialogThemeData(
                             backgroundColor: BizColors.colorBackground.color,
@@ -340,6 +303,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                       name: model.name,
                       description: model.description,
                       price: model.price,
+                      product: model.product,
                       date: formattedDate,
                       type: model.type,
                     );
@@ -357,9 +321,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                       provider.resultState is AddReportLoadingState
                           ? null
                           : () async {
-                            if (validateInputs(
-                              provider.addReportModel ?? AddReportModel(),
-                            )) {
+                            if (provider.validateInputs()) {
                               await provider.addReport();
                               if (context.mounted) {
                                 Navigator.pop(context);
