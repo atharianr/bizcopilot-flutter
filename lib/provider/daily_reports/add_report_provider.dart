@@ -1,4 +1,5 @@
 import 'package:bizcopilot_flutter/data/model/add_report_model.dart';
+import 'package:bizcopilot_flutter/data/model/request/add_expense_report_request.dart';
 import 'package:bizcopilot_flutter/static/reports/report_type.dart';
 import 'package:bizcopilot_flutter/utils/extension_utils.dart';
 import 'package:flutter/widgets.dart';
@@ -144,13 +145,20 @@ class AddReportProvider extends ChangeNotifier {
       if (_addReportModel!.type == ReportType.sales) {
         final request = AddSaleReportRequest(
           productId: _addReportModel?.product?.id,
-          userId: _addReportModel?.product?.userId,
+          userId: _addReportModel?.product?.userId ?? 1,
           quantity: 1, // for removing stock by 1
           saleDate: _addReportModel?.date,
         );
         await _apiServices.addSaleReport(request);
       } else {
-        // Handle other report types if needed
+        final request = AddExpenseReportRequest(
+          userId: _addReportModel?.product?.userId ?? 1,
+          amount: _addReportModel?.price,
+          title: _addReportModel?.name,
+          description: _addReportModel?.description,
+          expenseDate: _addReportModel?.date,
+        );
+        await _apiServices.addExpenseReport(request);
       }
 
       _resultState = AddReportLoadedState(true);

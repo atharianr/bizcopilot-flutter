@@ -1,10 +1,10 @@
-class AddSaleReportResponse {
+class AddReportResponse {
   Data? data;
 
-  AddSaleReportResponse({this.data});
+  AddReportResponse({this.data});
 
-  factory AddSaleReportResponse.fromJson(Map<String, dynamic> json) =>
-      AddSaleReportResponse(
+  factory AddReportResponse.fromJson(Map<String, dynamic> json) =>
+      AddReportResponse(
         data: json["data"] != null ? Data.fromJson(json["data"]) : null,
       );
 
