@@ -78,276 +78,263 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
             ? (productProvider.resultState as ListProductLoadedState).data
             : <Products>[];
 
-    return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 72),
-      child: Container(
-        decoration: BoxDecoration(
-          color: BizColors.colorBackground.getColor(context),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: blackColor.withOpacity(0.2),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
-          ],
+    return Container(
+      decoration: BoxDecoration(
+        color: BizColors.colorBackground.getColor(context),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: grayColor,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+      ),
+      child: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(top: 12, bottom: 16),
+                decoration: BoxDecoration(
+                  color: grayColor,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const Center(
-                child: Text(
-                  "Add New Report",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+            ),
+            const Center(
+              child: Text(
+                "Add New Report",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 16),
+            ),
+            const SizedBox(height: 16),
 
+            Text(
+              "Report Type",
+              style: BizTextStyles.bodyLargeMedium.copyWith(color: blackColor),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                BizRadioButton(
+                  label: "Sales",
+                  value: ReportType.sales,
+                  selectedTag: model.type,
+                  onTap: () {
+                    provider.resetSaleReportModel();
+                    provider.resetErrors();
+                  },
+                ),
+                const SizedBox(width: 12),
+                BizRadioButton(
+                  label: "Expenses",
+                  value: ReportType.expenses,
+                  selectedTag: model.type,
+                  onTap: () {
+                    provider.resetExpenseReportModel();
+                    provider.resetErrors();
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            if (isSales) ...[
               Text(
-                "Report Type",
+                "Product",
                 style: BizTextStyles.bodyLargeMedium.copyWith(
                   color: blackColor,
                 ),
               ),
               const SizedBox(height: 8),
-              Row(
-                children: [
-                  BizRadioButton(
-                    label: "Sales",
-                    value: ReportType.sales,
-                    selectedTag: model.type,
-                    onTap: () {
-                      provider.resetSaleReportModel();
-                      provider.resetErrors();
+              productProvider.resultState is ListProductLoadingState
+                  ? const ShimmerCard(height: 48)
+                  : BizDropDown(
+                    value: model.name,
+                    hintText: "Product",
+                    items: productList.map((e) => e.name ?? '').toList(),
+                    onChanged: (index, value) {
+                      provider.setReportModel = AddReportModel(
+                        name: value,
+                        description: model.description,
+                        price: model.price,
+                        product: productList[index],
+                        date: model.date,
+                        type: ReportType.sales,
+                      );
                     },
+                    errorText: provider.productError,
                   ),
-                  const SizedBox(width: 12),
-                  BizRadioButton(
-                    label: "Expenses",
-                    value: ReportType.expenses,
-                    selectedTag: model.type,
-                    onTap: () {
-                      provider.resetExpenseReportModel();
-                      provider.resetErrors();
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              if (isSales) ...[
-                Text(
-                  "Product",
-                  style: BizTextStyles.bodyLargeMedium.copyWith(
-                    color: blackColor,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                productProvider.resultState is ListProductLoadingState
-                    ? const ShimmerCard(height: 48)
-                    : BizDropDown(
-                      value: model.name,
-                      hintText: "Product",
-                      items:
-                          productList
-                              .map((e) => e.name ?? '')
-                              .toList()
-                              .cast<String>(),
-                      onChanged: (index, value) {
-                        provider.setReportModel = AddReportModel(
-                          name: value,
-                          description: model.description,
-                          price: model.price,
-                          product: productList[index],
-                          date: model.date,
-                          type: ReportType.sales,
-                        );
-                      },
-                      errorText: provider.productError,
-                    ),
-              ] else ...[
-                Text(
-                  "Report Name",
-                  style: BizTextStyles.bodyLargeMedium.copyWith(
-                    color: blackColor,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                BizTextInput(
-                  hintText: "Name",
-                  controller: nameController,
-                  errorText: provider.nameError,
-                  onChanged: (value) {
-                    provider.setReportModel = AddReportModel(
-                      name: value,
-                      description: model.description,
-                      price: model.price,
-                      product: model.product,
-                      date: model.date,
-                      type: model.type,
-                    );
-                  },
-                ),
-                const SizedBox(height: 12),
-
-                Text(
-                  "Description",
-                  style: BizTextStyles.bodyLargeMedium.copyWith(
-                    color: blackColor,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                BizTextInput(
-                  hintText: "Description",
-                  controller: descriptionController,
-                  maxLines: 4,
-                  scrollPadding: const EdgeInsets.all(20),
-                  errorText: provider.descriptionError,
-                  onChanged: (value) {
-                    provider.setReportModel = AddReportModel(
-                      name: model.name,
-                      description: value,
-                      price: model.price,
-                      product: model.product,
-                      date: model.date,
-                      type: model.type,
-                    );
-                  },
-                ),
-                const SizedBox(height: 12),
-
-                Text(
-                  "Price",
-                  style: BizTextStyles.bodyLargeMedium.copyWith(
-                    color: blackColor,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                BizTextInput(
-                  hintText: "Price",
-                  controller: priceController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  errorText: provider.priceError,
-                  onChanged: (value) {
-                    provider.setReportModel = AddReportModel(
-                      name: model.name,
-                      description: model.description,
-                      price: int.tryParse(value),
-                      product: model.product,
-                      date: model.date,
-                      type: model.type,
-                    );
-                  },
-                ),
-              ],
-
-              const SizedBox(height: 12),
+            ] else ...[
               Text(
-                "Date",
+                "Report Name",
                 style: BizTextStyles.bodyLargeMedium.copyWith(
                   color: blackColor,
                 ),
               ),
               const SizedBox(height: 8),
               BizTextInput(
-                hintText: "Date",
-                controller: dateController,
-                readOnly: true,
-                errorText: provider.dateError,
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2100),
-                    builder: (context, child) {
-                      return Theme(
-                        data: Theme.of(context).copyWith(
-                          colorScheme: ColorScheme.light(
-                            primary: primaryColor,
-                            onPrimary: Colors.white,
-                            surface: BizColors.colorBackground.getColor(
-                              context,
-                            ),
-                            onSurface: blackColor,
-                          ),
-                          dialogTheme: DialogThemeData(
-                            backgroundColor: BizColors.colorBackground.color,
-                          ),
-                        ),
-                        child: child!,
-                      );
-                    },
+                hintText: "Name",
+                controller: nameController,
+                errorText: provider.nameError,
+                onChanged: (value) {
+                  provider.setReportModel = AddReportModel(
+                    name: value,
+                    description: model.description,
+                    price: model.price,
+                    product: model.product,
+                    date: model.date,
+                    type: model.type,
                   );
-
-                  if (pickedDate != null) {
-                    String formattedDate =
-                        "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
-                    dateController.text = formattedDate;
-                    provider.setReportModel = AddReportModel(
-                      name: model.name,
-                      description: model.description,
-                      price: model.price,
-                      product: model.product,
-                      date: formattedDate,
-                      type: model.type,
-                    );
-                  }
                 },
               ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(primaryColor),
-                  ),
-                  onPressed:
-                      provider.resultState is AddReportLoadingState
-                          ? null
-                          : () async {
-                            if (provider.validateInputs()) {
-                              await provider.addReport();
-                              if (context.mounted) {
-                                Navigator.pop(context);
-                              }
-                            }
-                          },
-                  child:
-                      provider.resultState is AddReportLoadingState
-                          ? SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: BizColors.colorWhite.getColor(context),
-                              strokeWidth: 2,
-                            ),
-                          )
-                          : Text(
-                            "Add Report",
-                            style: BizTextStyles.button.copyWith(
-                              color: BizColors.colorWhite.getColor(context),
-                            ),
-                          ),
+              const SizedBox(height: 12),
+
+              Text(
+                "Description",
+                style: BizTextStyles.bodyLargeMedium.copyWith(
+                  color: blackColor,
                 ),
               ),
+              const SizedBox(height: 8),
+              BizTextInput(
+                hintText: "Description",
+                controller: descriptionController,
+                maxLines: 4,
+                scrollPadding: const EdgeInsets.all(20),
+                errorText: provider.descriptionError,
+                onChanged: (value) {
+                  provider.setReportModel = AddReportModel(
+                    name: model.name,
+                    description: value,
+                    price: model.price,
+                    product: model.product,
+                    date: model.date,
+                    type: model.type,
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+
+              Text(
+                "Price",
+                style: BizTextStyles.bodyLargeMedium.copyWith(
+                  color: blackColor,
+                ),
+              ),
+              const SizedBox(height: 8),
+              BizTextInput(
+                hintText: "Price",
+                controller: priceController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                errorText: provider.priceError,
+                onChanged: (value) {
+                  provider.setReportModel = AddReportModel(
+                    name: model.name,
+                    description: model.description,
+                    price: int.tryParse(value),
+                    product: model.product,
+                    date: model.date,
+                    type: model.type,
+                  );
+                },
+              ),
             ],
-          ),
+
+            const SizedBox(height: 12),
+            Text(
+              "Date",
+              style: BizTextStyles.bodyLargeMedium.copyWith(color: blackColor),
+            ),
+            const SizedBox(height: 8),
+            BizTextInput(
+              hintText: "Date",
+              controller: dateController,
+              readOnly: true,
+              errorText: provider.dateError,
+              onTap: () async {
+                DateTime? pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2100),
+                  builder: (context, child) {
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: ColorScheme.light(
+                          primary: primaryColor,
+                          onPrimary: Colors.white,
+                          surface: BizColors.colorBackground.getColor(context),
+                          onSurface: blackColor,
+                        ),
+                        dialogTheme: DialogThemeData(
+                          backgroundColor: BizColors.colorBackground.color,
+                        ),
+                      ),
+                      child: child!,
+                    );
+                  },
+                );
+
+                if (pickedDate != null) {
+                  String formattedDate =
+                      "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                  dateController.text = formattedDate;
+                  provider.setReportModel = AddReportModel(
+                    name: model.name,
+                    description: model.description,
+                    price: model.price,
+                    product: model.product,
+                    date: formattedDate,
+                    type: model.type,
+                  );
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(primaryColor),
+                ),
+                onPressed:
+                    provider.resultState is AddReportLoadingState
+                        ? null
+                        : () async {
+                          if (provider.validateInputs()) {
+                            await provider.addReport();
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                          }
+                        },
+                child:
+                    provider.resultState is AddReportLoadingState
+                        ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: BizColors.colorWhite.getColor(context),
+                            strokeWidth: 2,
+                          ),
+                        )
+                        : Text(
+                          "Add Report",
+                          style: BizTextStyles.button.copyWith(
+                            color: BizColors.colorWhite.getColor(context),
+                          ),
+                        ),
+              ),
+            ),
+          ],
         ),
       ),
     );
