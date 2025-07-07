@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
-import '../../data/model/add_report_model.dart';
 import '../../provider/daily_reports/add_report_provider.dart';
 import '../../provider/main/index_nav_provider.dart';
 import '../../static/bottom_nav/bottom_nav.dart';
@@ -65,7 +64,8 @@ class MainScreen extends StatelessWidget {
                 // barrierColor: Colors.transparent,
                 builder: (context) => const AddReportBottomSheet(),
               ).then((_) {
-                provider.setReportModel = AddReportModel();
+                provider.resetReportModel();
+                provider.resetErrors();
               });
             } else {
               context.read<IndexNavProvider>().setIndexBottomNavBar = index;
