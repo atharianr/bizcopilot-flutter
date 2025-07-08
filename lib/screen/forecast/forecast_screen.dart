@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -159,35 +160,56 @@ class ForecastChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<SalesData> salesData = [
-      SalesData('Jan', 19),
-      SalesData('Feb', 25),
-      SalesData('Mar', 26),
-      SalesData('Apr', 29),
-      SalesData('May', 37),
-      SalesData('Jun', 49),
-      SalesData('Jul', 60),
-      SalesData('Aug', 65),
-      SalesData('Sep', 62),
-      SalesData('Oct', 68),
-      SalesData('Nov', 72),
-      SalesData('Dec', 75),
+    final List<ChartData> realData = [
+      ChartData(DateTime(2024, 7, 1), 1650000),
+      ChartData(DateTime(2024, 7, 4), 2400000),
+      ChartData(DateTime(2024, 7, 7), 1850000),
+      ChartData(DateTime(2024, 7, 10), 3100000),
+      ChartData(DateTime(2024, 7, 13), 2000000),
+      ChartData(DateTime(2024, 7, 16), 2800000),
+      ChartData(DateTime(2024, 7, 19), 1900000),
+      ChartData(DateTime(2024, 7, 22), 3250000),
+      ChartData(DateTime(2024, 7, 25), 2100000),
+      ChartData(DateTime(2024, 7, 28), 2950000),
     ];
 
-    final List<SalesData> expensesData = [
-      SalesData('Jan', 58),
-      SalesData('Feb', 43),
-      SalesData('Mar', 39),
-      SalesData('Apr', 36),
-      SalesData('May', 27),
-      SalesData('Jun', 30),
-      SalesData('Jul', 35),
-      SalesData('Aug', 38),
-      SalesData('Sep', 40),
-      SalesData('Oct', 42),
-      SalesData('Nov', 43),
-      SalesData('Dec', 45),
+    final List<ChartData> yData = [
+      ChartData(DateTime(2024, 7, 1), 1750000),
+      ChartData(DateTime(2024, 7, 4), 2500000),
+      ChartData(DateTime(2024, 7, 7), 1950000),
+      ChartData(DateTime(2024, 7, 10), 3200000),
+      ChartData(DateTime(2024, 7, 13), 2100000),
+      ChartData(DateTime(2024, 7, 16), 2900000),
+      ChartData(DateTime(2024, 7, 19), 2000000),
+      ChartData(DateTime(2024, 7, 22), 3350000),
+      ChartData(DateTime(2024, 7, 25), 2200000),
+      ChartData(DateTime(2024, 7, 28), 3050000),
     ];
+
+    final List<RangeData> yRangeData = [
+      RangeData(DateTime(2024, 7, 1), 1500000, 2000000),
+      RangeData(DateTime(2024, 7, 4), 2200000, 2700000),
+      RangeData(DateTime(2024, 7, 7), 1700000, 2200000),
+      RangeData(DateTime(2024, 7, 10), 3000000, 3500000),
+      RangeData(DateTime(2024, 7, 13), 1900000, 2400000),
+      RangeData(DateTime(2024, 7, 16), 2700000, 3200000),
+      RangeData(DateTime(2024, 7, 19), 1800000, 2300000),
+      RangeData(DateTime(2024, 7, 22), 3100000, 3600000),
+      RangeData(DateTime(2024, 7, 25), 2000000, 2500000),
+      RangeData(DateTime(2024, 7, 28), 2800000, 3300000),
+    ];
+
+    // Collect all Y values
+    final allValues = [
+      ...realData.map((e) => e.value),
+      ...yData.map((e) => e.value),
+      ...yRangeData.map((e) => e.lower),
+      ...yRangeData.map((e) => e.upper),
+    ];
+
+    // Find min and max
+    final minValue = allValues.reduce((a, b) => a < b ? a : b);
+    final maxValue = allValues.reduce((a, b) => a > b ? a : b);
 
     return Container(
       decoration: BoxDecoration(
@@ -206,77 +228,69 @@ class ForecastChart extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: SfCartesianChart(
           plotAreaBorderWidth: 0,
-          primaryXAxis: CategoryAxis(
+          primaryXAxis: DateTimeAxis(
             majorGridLines: MajorGridLines(width: 0),
             axisLine: AxisLine(width: 0.5),
-            plotOffset: 0,
-            labelPlacement: LabelPlacement.onTicks,
+            dateFormat: DateFormat('d MMM'),
+            intervalType: DateTimeIntervalType.days,
+            interval: 2,
             labelStyle: TextStyle(color: BizColors.colorText.getColor(context)),
           ),
           primaryYAxis: NumericAxis(
+            minimum: minValue,
+            maximum: maxValue,
+            interval: 250000,
             majorGridLines: MajorGridLines(width: 0.5),
             axisLine: AxisLine(width: 0),
             labelStyle: TextStyle(color: BizColors.colorText.getColor(context)),
+            axisLabelFormatter: (AxisLabelRenderDetails details) {
+              final num value = details.value;
+              final String text = '${(value / 1000).toStringAsFixed(0)}K';
+              return ChartAxisLabel(text, details.textStyle);
+            },
           ),
           title: ChartTitle(
-            text: 'Half yearly sales analysis',
-            textStyle: TextStyle(color: BizColors.colorText.getColor(context)),
+            text: 'Spot the Trends, Stay Ahead',
+            textStyle: BizTextStyles.bodyLargeExtraBold.copyWith(
+              color: BizColors.colorText.getColor(context),
+            ),
           ),
           legend: Legend(
             isVisible: true,
             textStyle: TextStyle(color: BizColors.colorText.getColor(context)),
           ),
           tooltipBehavior: tooltipBehavior,
-          crosshairBehavior: CrosshairBehavior(
-            enable: true,
-            lineWidth: 1,
-            lineColor: BizColors.colorText.getColor(context),
-            lineDashArray: [4, 4],
-            activationMode: ActivationMode.longPress,
-            shouldAlwaysShow: false,
-          ),
-          series: <SplineAreaSeries<SalesData, String>>[
-            SplineAreaSeries<SalesData, String>(
-              name: 'Sales',
-              dataSource: salesData,
-              xValueMapper: (SalesData sales, _) => sales.year,
-              yValueMapper: (SalesData sales, _) => sales.sales,
-              dataLabelSettings: DataLabelSettings(isVisible: false),
-              markerSettings: MarkerSettings(
-                isVisible: true,
-                width: 6,
-                height: 6,
-                shape: DataMarkerType.verticalLine,
-              ),
+          series: [
+            SplineRangeAreaSeries<RangeData, DateTime>(
+              name: 'Upper/Lower',
+              dataSource: yRangeData,
+              xValueMapper: (RangeData data, _) => data.date,
+              highValueMapper: (RangeData data, _) => data.upper,
+              lowValueMapper: (RangeData data, _) => data.lower,
               gradient: LinearGradient(
                 colors: [
-                  BizColors.colorGreen.getColor(context).withOpacity(0.5),
-                  BizColors.colorGreenDark.getColor(context).withOpacity(0.2),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-            SplineAreaSeries<SalesData, String>(
-              name: 'Expenses',
-              dataSource: expensesData,
-              xValueMapper: (SalesData sales, _) => sales.year,
-              yValueMapper: (SalesData sales, _) => sales.sales,
-              dataLabelSettings: DataLabelSettings(isVisible: false),
-              markerSettings: MarkerSettings(
-                isVisible: true,
-                width: 6,
-                height: 6,
-                shape: DataMarkerType.verticalLine,
-              ),
-              gradient: LinearGradient(
-                colors: [
-                  BizColors.colorOrange.getColor(context).withOpacity(0.5),
+                  BizColors.colorOrange.getColor(context).withOpacity(0.4),
                   BizColors.colorOrangeDark.getColor(context).withOpacity(0.2),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
+            ),
+            SplineSeries<ChartData, DateTime>(
+              name: 'Y Data',
+              dataSource: yData,
+              xValueMapper: (ChartData data, _) => data.date,
+              yValueMapper: (ChartData data, _) => data.value,
+              color: BizColors.colorGreen.getColor(context),
+              markerSettings: MarkerSettings(isVisible: true),
+            ),
+            ScatterSeries<ChartData, DateTime>(
+              name: 'Real Data',
+              dataSource: realData,
+              xValueMapper: (ChartData data, _) => data.date,
+              yValueMapper: (ChartData data, _) => data.value,
+              color: BizColors.colorPrimary.getColor(context),
+              markerSettings: MarkerSettings(isVisible: true),
             ),
           ],
         ),
@@ -285,9 +299,17 @@ class ForecastChart extends StatelessWidget {
   }
 }
 
-class SalesData {
-  SalesData(this.year, this.sales);
+class ChartData {
+  ChartData(this.date, this.value);
 
-  final String year;
-  final double sales;
+  final DateTime date;
+  final double value;
+}
+
+class RangeData {
+  RangeData(this.date, this.lower, this.upper);
+
+  final DateTime date;
+  final double lower;
+  final double upper;
 }
