@@ -28,13 +28,10 @@ class ListProduct extends StatefulWidget {
 
 class _ListProductState extends State<ListProduct> {
 
-  List<Products> unsortedAllProducts = [];
-  List<Products> sortedAllProducts = [];
-
     void initState() {
       super.initState();
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Provider.of<ListProductProvider>(
+        final productProvider = Provider.of<ListProductProvider>(
           context,
           listen: false,
         ).getAllListProducts();
@@ -90,23 +87,9 @@ class _ListProductState extends State<ListProduct> {
                     builder: (context) => FilterProductSheet()
                   );
                   if (selectedSorting != null) {
-                    List<Products> result;
-                    switch (selectedSorting) {
-                      case SortingType.nothing:
-                        result = unsortedAllProducts;
-                      case SortingType.name:
-                        result = unsortedAllProducts.sortedBy((product) => product.name ?? "");
-                      case SortingType.price:
-                        result = unsortedAllProducts.sortedBy((product) => product.price ?? 0.0);
-                      case SortingType.time:
-                        result = unsortedAllProducts.sortedBy((product) => product.updatedAt ?? product.createdAt ?? "");
-                      case SortingType.stock:
-                        result = unsortedAllProducts.sortedBy((product) => product.inventory ?? 0);
-                    }
+                    final productProvider = Provider.of<ListProductProvider>(context, listen: false);
+                    productProvider.sortProducts(type: selectedSorting, order: SortingOrder.ascending);
                   }
-                  setState(() {
-                    sortedAllProducts = unsortedAllProducts;
-                  });
                 },
                 child: Container(
                   padding: const EdgeInsets.all(8),
@@ -130,11 +113,8 @@ class _ListProductState extends State<ListProduct> {
                   case ListProductLoadingState(): 
                     return const CircularProgressIndicator();
                   case ListProductLoadedState(data: var data):
-                    if (unsortedAllProducts.isEmpty) {
-                      unsortedAllProducts = data;
-                      sortedAllProducts = data;
-                    }
-                    return Expanded(child: MediaQuery.removePadding(context: context, removeTop: true, child: _listProductView(sortedAllProducts)));
+                    final products = context.read<ListProductProvider>().sortedAllProducts;
+                    return Expanded(child: MediaQuery.removePadding(context: context, removeTop: true, child: _listProductView(products)));
                   case ListProductErrorState(error: var message): 
                     return Text(message);
                   default:
@@ -156,7 +136,7 @@ Widget _listProductView(List<Products> allProducts) {
           if (index == allProducts.length - 1) {
             spacePadding = 0.0;
           }
-            final itemData = unsortedAllProducts[index];
+            final itemData = allProducts[index];
             return ListProductCell(
               product: itemData, 
               spacePadding: spacePadding, 
@@ -257,6 +237,7 @@ class FilterProductSheet extends StatefulWidget {
 }
 
 enum SortingType { nothing, name, price, time, stock }
+enum SortingOrder { ascending, descending } 
 
 class _ProductFilterState extends State<FilterProductSheet> {
   SortingType? _character = SortingType.nothing;
@@ -285,7 +266,7 @@ class _ProductFilterState extends State<FilterProductSheet> {
             ListTile(
               title: const Text('Name'),
               leading: Radio<SortingType>(
-                value: SortingType.name,
+                value: SortingType.stock,
                 groupValue: _character,
                 onChanged: (SortingType? value) {
                   setState(() {
@@ -296,7 +277,7 @@ class _ProductFilterState extends State<FilterProductSheet> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context, _character); // Return selected value
+                Navigator.pop(context, _character);
               },
               child: const Text("Apply Sorting"),
             )
