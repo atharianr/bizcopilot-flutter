@@ -148,9 +148,11 @@ class _HomeScreenState extends State<HomeScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: GradientProfitCard(
-            forecast: data[0].forecast ?? "",
+            // forecast: data[0].forecast ?? "",
+            forecast: "test forecast profit",
             amount: CurrencyUtils.formatCurrency(
-              data[0].currency,
+              // data[0].currency,
+              "Rp",
               data[0].value,
             ),
             colors: [
@@ -168,10 +170,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GradientCard(
                   title: "Sales",
                   iconUri: "assets/images/ic_arrow_up_circle_white_12.svg",
-                  forecast: data[1].forecast ?? "",
+                  // forecast: data[2].forecast ?? "",
+                  forecast: "test forecast sales",
                   amount: CurrencyUtils.formatCurrency(
-                    data[1].currency,
-                    data[1].value,
+                    // data[2].currency,
+                    "Rp",
+                    data[2].value,
                   ),
                   colors: [
                     BizColors.colorGreen.getColor(context),
@@ -184,10 +188,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GradientCard(
                   title: "Expenses",
                   iconUri: "assets/images/ic_arrow_down_circle_white_12.svg",
-                  forecast: data[2].forecast ?? "",
+                  // forecast: data[1].forecast ?? "",
+                  forecast: "test forecast expenses",
                   amount: CurrencyUtils.formatCurrency(
-                    data[2].currency,
-                    data[2].value,
+                    // data[1].currency,
+                    "Rp",
+                    data[1].value,
                   ),
                   colors: [
                     BizColors.colorOrange.getColor(context),
