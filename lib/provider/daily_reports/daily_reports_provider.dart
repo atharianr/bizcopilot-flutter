@@ -20,7 +20,7 @@ class DailyReportsProvider extends ChangeNotifier {
 
       final result = await _apiServices.getDailyReports();
       _resultState = DailyReportsLoadedState(
-        result.data?.getDailyReports?.dailyReports ?? [],
+        result.data?.getMonthlyReports?.reports ?? [],
       );
       notifyListeners();
     } catch (e) {
