@@ -50,43 +50,70 @@ class _HomeScreenState extends State<HomeScreen> {
             ).getDailyReports(),
           ]);
         },
-        child: ListView(
-          padding: EdgeInsets.only(top: 24),
+        child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          children: [
-            _buildGreetingSection(context),
-            const SizedBox(height: 24),
-            Consumer<HomeWidgetsProvider>(
-              builder: (context, value, child) {
-                return switch (value.resultState) {
-                  HomeWidgetsLoadingState() => _buildHomeLoading(),
-                  HomeWidgetsLoadedState(data: var data) => _buildHomeLoaded(
-                    data,
-                  ),
-                  HomeWidgetsErrorState(error: var message) => _buildError(
-                    message,
-                  ),
-                  _ => const SizedBox(),
-                };
-              },
-            ),
-            const SizedBox(height: 24),
-            _buildDailyReportsHeader(context),
-            const SizedBox(height: 10),
-            Center(
-              child: Consumer<DailyReportsProvider>(
+          slivers: [
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            SliverToBoxAdapter(child: _buildGreetingSection(context)),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            SliverToBoxAdapter(
+              child: Consumer<HomeWidgetsProvider>(
                 builder: (context, value, child) {
                   return switch (value.resultState) {
-                    DailyReportsLoadingState() => _buildDailyLoading(),
-                    DailyReportsLoadedState(data: var data) =>
-                      _buildDailyLoaded(data),
-                    DailyReportsErrorState(error: var message) => _buildError(
+                    HomeWidgetsLoadingState() => _buildHomeLoading(),
+                    HomeWidgetsLoadedState(data: var data) => _buildHomeLoaded(
+                      data,
+                    ),
+                    HomeWidgetsErrorState(error: var message) => _buildError(
                       message,
                     ),
                     _ => const SizedBox(),
                   };
                 },
               ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            SliverToBoxAdapter(child: _buildDailyReportsHeader(context)),
+            const SliverToBoxAdapter(child: SizedBox(height: 10)),
+            Consumer<DailyReportsProvider>(
+              builder: (context, value, child) {
+                return switch (value.resultState) {
+                  DailyReportsLoadingState() => _buildDailyLoading(),
+
+                  DailyReportsLoadedState(dailyData: final data)
+                      when data.isEmpty =>
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _buildNoReportsAvailable(),
+                    ),
+
+                  DailyReportsLoadedState(dailyData: final data) => SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final item = data[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 4,
+                        ),
+                        child: ListReports(
+                          title: item.name ?? "",
+                          description: item.description ?? "",
+                          amount: CurrencyUtils.formatCurrency(
+                            item.currency,
+                            item.value ?? "",
+                          ),
+                          type: item.transactionType ?? "",
+                        ),
+                      );
+                    }, childCount: data.length),
+                  ),
+
+                  DailyReportsErrorState(error: final message) =>
+                    SliverToBoxAdapter(child: _buildError(message)),
+
+                  _ => const SliverToBoxAdapter(child: SizedBox()),
+                };
+              },
             ),
           ],
         ),
@@ -148,13 +175,8 @@ class _HomeScreenState extends State<HomeScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: GradientProfitCard(
-            // forecast: data[0].forecast ?? "",
             forecast: "test forecast profit",
-            amount: CurrencyUtils.formatCurrency(
-              // data[0].currency,
-              "Rp",
-              data[0].value,
-            ),
+            amount: CurrencyUtils.formatCurrency("Rp", data[0].value),
             colors: [
               BizColors.colorPrimary.getColor(context),
               BizColors.colorPrimaryDark.getColor(context),
@@ -170,13 +192,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GradientCard(
                   title: "Sales",
                   iconUri: "assets/images/ic_arrow_up_circle_white_12.svg",
-                  // forecast: data[2].forecast ?? "",
                   forecast: "test forecast sales",
-                  amount: CurrencyUtils.formatCurrency(
-                    // data[2].currency,
-                    "Rp",
-                    data[2].value,
-                  ),
+                  amount: CurrencyUtils.formatCurrency("Rp", data[2].value),
                   colors: [
                     BizColors.colorGreen.getColor(context),
                     BizColors.colorGreenDark.getColor(context),
@@ -188,13 +205,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GradientCard(
                   title: "Expenses",
                   iconUri: "assets/images/ic_arrow_down_circle_white_12.svg",
-                  // forecast: data[1].forecast ?? "",
                   forecast: "test forecast expenses",
-                  amount: CurrencyUtils.formatCurrency(
-                    // data[1].currency,
-                    "Rp",
-                    data[1].value,
-                  ),
+                  amount: CurrencyUtils.formatCurrency("Rp", data[1].value),
                   colors: [
                     BizColors.colorOrange.getColor(context),
                     BizColors.colorOrangeDark.getColor(context),
@@ -221,33 +233,39 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildDailyLoading() {
-    return Column(
-      children: List.generate(3, (index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 24),
-          child: ShimmerCard(),
-        );
-      }),
+    return SliverToBoxAdapter(
+      child: Column(
+        children: List.generate(3, (index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 24),
+            child: ShimmerCard(),
+          );
+        }),
+      ),
     );
   }
 
-  Widget _buildDailyLoaded(List<dynamic> data) {
-    return Column(
-      children: List.generate(data.length, (index) {
-        final item = data[index];
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: ListReports(
-            title: item.name ?? "",
-            description: item.description ?? "",
-            amount: CurrencyUtils.formatCurrency(
-              item.currency,
-              item.value ?? "",
-            ),
-            type: item.transactionType ?? "",
+  Widget _buildNoReportsAvailable() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.receipt_long_rounded,
+            size: 64,
+            color: Colors.grey.shade400,
           ),
-        );
-      }),
+          const SizedBox(height: 16),
+          Text(
+            'No reports available for today',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

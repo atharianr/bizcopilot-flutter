@@ -19,9 +19,25 @@ class DailyReportsProvider extends ChangeNotifier {
       notifyListeners();
 
       final result = await _apiServices.getDailyReports();
-      _resultState = DailyReportsLoadedState(
-        result.data?.getMonthlyReports?.reports ?? [],
-      );
+
+      final allReports = result.data?.getMonthlyReports?.reports ?? [];
+
+      // Filter today's reports
+      final today = DateTime.now();
+      final todayReports =
+          allReports.where((report) {
+            if (report.createdAt == null) return false;
+            try {
+              final createdDate = DateTime.parse(report.createdAt!);
+              return createdDate.year == today.year &&
+                  createdDate.month == today.month &&
+                  createdDate.day == today.day;
+            } catch (_) {
+              return false;
+            }
+          }).toList();
+
+      _resultState = DailyReportsLoadedState(todayReports, allReports);
       notifyListeners();
     } catch (e) {
       _resultState = DailyReportsErrorState(e.getMessage());

@@ -1,9 +1,9 @@
-class GetMonthlyReportsResponse {
+class MonthlyReportsResponse {
   Data? data;
 
-  GetMonthlyReportsResponse({this.data});
+  MonthlyReportsResponse({this.data});
 
-  GetMonthlyReportsResponse.fromJson(Map<String, dynamic> json) {
+  MonthlyReportsResponse.fromJson(Map<String, dynamic> json) {
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
