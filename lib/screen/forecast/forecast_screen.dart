@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/daily_reports/home_widgets_provider.dart';
-import '../../static/state/home_widgets_result_state.dart';
 import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
 import '../widget/forecast_gradient_card.dart';
@@ -69,18 +68,18 @@ class _ForecastScreenState extends State<ForecastScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            Consumer<HomeWidgetsProvider>(
-              builder: (context, value, child) {
-                return switch (value.resultState) {
-                  HomeWidgetsLoadingState() => _buildLoading(),
-                  HomeWidgetsLoadedState(data: var data) => _buildLoaded(data),
-                  HomeWidgetsErrorState(error: var message) => _buildError(
-                    message,
-                  ),
-                  _ => const SizedBox(),
-                };
-              },
-            ),
+            // Consumer<HomeWidgetsProvider>(
+            //   builder: (context, value, child) {
+            //     return switch (value.resultState) {
+            //       HomeWidgetsLoadingState() => _buildLoading(),
+            //       HomeWidgetsLoadedState(data: var data) => _buildLoaded(data),
+            //       HomeWidgetsErrorState(error: var message) => _buildError(
+            //         message,
+            //       ),
+            //       _ => const SizedBox(),
+            //     };
+            //   },
+            // ),
           ],
         ),
       ),

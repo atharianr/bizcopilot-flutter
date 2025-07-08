@@ -12,7 +12,8 @@ import 'utils/base_network.dart';
 
 class ApiServices {
   Future<HomeWidgetsResponse> getHomeWidgets() {
-    final uri = Uri.parse("${Constant.baseUrl}/home-widgets");
+    final uri = Uri.parse("${Constant.baseUrl}/home");
+    print("uri -> $uri");
 
     return BaseNetwork.get<HomeWidgetsResponse>(
       url: uri,

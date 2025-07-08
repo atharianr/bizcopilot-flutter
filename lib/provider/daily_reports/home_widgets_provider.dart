@@ -19,8 +19,9 @@ class HomeWidgetsProvider extends ChangeNotifier {
       notifyListeners();
 
       final result = await _apiServices.getHomeWidgets();
+      print("result -> ${result.toJson()}");
       _resultState = HomeWidgetsLoadedState(
-        result.data?.getHomeWidget?.widgets ?? [],
+        result.data?.getHomeWidgets?.widgets ?? [],
       );
       notifyListeners();
     } catch (e) {
