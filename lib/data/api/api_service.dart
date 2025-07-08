@@ -13,7 +13,6 @@ import 'utils/base_network.dart';
 class ApiServices {
   Future<HomeWidgetsResponse> getHomeWidgets() {
     final uri = Uri.parse("${Constant.baseUrl}/home");
-    print("uri -> $uri");
 
     return BaseNetwork.get<HomeWidgetsResponse>(
       url: uri,
@@ -22,18 +21,17 @@ class ApiServices {
     );
   }
 
-  Future<GetMonthlyReportsResponse> getDailyReports() {
+  Future<MonthlyReportsResponse> getDailyReports() {
     final uri = Uri.parse("${Constant.baseUrl}/report/monthly");
 
-    return BaseNetwork.get<GetMonthlyReportsResponse>(
+    return BaseNetwork.get<MonthlyReportsResponse>(
       url: uri,
       headers: {"Content-Type": "application/json"},
-      parser: (json) => GetMonthlyReportsResponse.fromJson(json),
+      parser: (json) => MonthlyReportsResponse.fromJson(json),
     );
   }
 
   Future<AddReportResponse> addSaleReport(AddSaleReportRequest request) {
-    print("sale -> ${request.toJson()}");
     final uri = Uri.parse("${Constant.baseUrl}/sale");
     final response = BaseNetwork.post<AddReportResponse>(
       url: uri,
@@ -45,7 +43,6 @@ class ApiServices {
   }
 
   Future<AddReportResponse> addExpenseReport(AddExpenseReportRequest request) {
-    print("expense -> ${request.toJson()}");
     final uri = Uri.parse("${Constant.baseUrl}/expense");
     final response = BaseNetwork.post<AddReportResponse>(
       url: uri,
