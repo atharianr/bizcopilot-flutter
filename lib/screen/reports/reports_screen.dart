@@ -7,7 +7,6 @@ import '../../provider/daily_reports/daily_reports_provider.dart';
 import '../../static/state/daily_reports_result_state.dart';
 import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
-import '../../utils/currency_utils.dart';
 import '../widget/reports/reports_card.dart';
 import '../widget/shimmer_card.dart';
 
@@ -151,17 +150,7 @@ class ReportsScreen extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
-        ...items.map(
-          (item) => ListReports(
-            title: item.name ?? "",
-            description: item.description ?? "",
-            amount: CurrencyUtils.formatCurrency(
-              item.currency,
-              item.value ?? "",
-            ),
-            type: item.transactionType ?? "",
-          ),
-        ),
+        ...items.map((item) => ReportsCard(reportData: item)),
         const SizedBox(height: 12),
       ]);
     });

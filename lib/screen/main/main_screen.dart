@@ -55,18 +55,13 @@ class MainScreen extends StatelessWidget {
           currentIndex: context.watch<IndexNavProvider>().indexBottomNavBar,
           onTap: (index) {
             if (index == BottomNav.add.index) {
-              final provider = context.read<AddReportProvider>();
-
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
                 // barrierColor: Colors.transparent,
                 builder: (context) => const AddReportBottomSheet(),
-              ).then((_) {
-                provider.resetReportModel();
-                provider.resetErrors();
-              });
+              );
             } else {
               context.read<IndexNavProvider>().setIndexBottomNavBar = index;
             }

@@ -62,6 +62,7 @@ class GetMonthlyReports {
 
 class Reports {
   int? id;
+  int? productId;
   String? name;
   String? description;
   String? transactionType;
@@ -71,6 +72,7 @@ class Reports {
 
   Reports({
     this.id,
+    this.productId,
     this.name,
     this.description,
     this.transactionType,
@@ -81,6 +83,7 @@ class Reports {
 
   Reports.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    productId = json['product_id'];
     name = json['name'];
     description = json['description'];
     transactionType = json['transaction_type'];
@@ -92,6 +95,7 @@ class Reports {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = {};
     json['id'] = id;
+    json['product_id'] = productId;
     json['name'] = name;
     json['description'] = description;
     json['transaction_type'] = transactionType;

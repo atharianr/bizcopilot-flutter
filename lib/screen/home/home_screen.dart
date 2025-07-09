@@ -95,15 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           horizontal: 24,
                           vertical: 4,
                         ),
-                        child: ListReports(
-                          title: item.name ?? "",
-                          description: item.description ?? "",
-                          amount: CurrencyUtils.formatCurrency(
-                            item.currency,
-                            item.value ?? "",
-                          ),
-                          type: item.transactionType ?? "",
-                        ),
+                        child: ReportsCard(reportData: item),
                       );
                     }, childCount: data.length),
                   ),

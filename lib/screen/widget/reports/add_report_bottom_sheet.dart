@@ -17,7 +17,9 @@ import '../biz_text_input.dart';
 import '../shimmer_card.dart';
 
 class AddReportBottomSheet extends StatefulWidget {
-  const AddReportBottomSheet({super.key});
+  final bool isUpdate;
+
+  const AddReportBottomSheet({super.key, this.isUpdate = false});
 
   @override
   State<AddReportBottomSheet> createState() => _AddReportBottomSheetState();
@@ -32,14 +34,18 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
   @override
   void initState() {
     super.initState();
+    final provider = context.read<AddReportProvider>();
     final model =
-        context.read<AddReportProvider>().addReportModel ?? AddReportModel();
+        widget.isUpdate
+            ? provider.addReportModel ?? AddReportModel()
+            : AddReportModel();
+
+    provider.resetErrors();
+
+    if (!widget.isUpdate) provider.resetReportModel();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ListProductProvider>(
-        context,
-        listen: false,
-      ).getAllListProducts();
+      context.read<ListProductProvider>().getAllListProducts();
     });
 
     nameController = TextEditingController(text: model.name ?? '');
@@ -107,10 +113,13 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                 ),
               ),
             ),
-            const Center(
+            Center(
               child: Text(
-                "Add New Report",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                model.date != null ? "Update Report" : "Add New Report",
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -156,7 +165,13 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
               productProvider.resultState is ListProductLoadingState
                   ? const ShimmerCard(height: 48)
                   : BizDropDown(
-                    value: model.name,
+                    value:
+                        productList
+                            .firstWhere(
+                              (e) => e.id == model.product?.id,
+                              orElse: () => Products(),
+                            )
+                            .name,
                     hintText: "Product",
                     items: productList.map((e) => e.name ?? '').toList(),
                     onChanged: (index, value) {
@@ -262,7 +277,11 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
               onTap: () async {
                 DateTime? pickedDate = await showDatePicker(
                   context: context,
-                  initialDate: DateTime.now(),
+                  initialDate:
+                      model.date != null && model.date!.isNotEmpty
+                          ? DateTime.parse(model.date!) // parse "2025-07-08"
+                          : DateTime.now(),
+                  // fallback if null or empty
                   firstDate: DateTime(2000),
                   lastDate: DateTime(2100),
                   builder: (context, child) {
@@ -327,7 +346,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                           ),
                         )
                         : Text(
-                          "Add Report",
+                          model.date != null ? "Update Report" : "Add Report",
                           style: BizTextStyles.button.copyWith(
                             color: BizColors.colorWhite.getColor(context),
                           ),
