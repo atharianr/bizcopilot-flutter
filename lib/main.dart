@@ -9,6 +9,7 @@ import 'package:bizcopilot_flutter/screen/main/main_screen.dart';
 import 'package:bizcopilot_flutter/screen/reports/reports_screen.dart';
 import 'package:bizcopilot_flutter/static/navigation/navigation_route.dart';
 import 'package:bizcopilot_flutter/style/theme/biz_theme.dart';
+import 'package:bizcopilot_flutter/provider/list_product/add_product_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -33,6 +34,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => ExampleApiProvider(context.read<ApiServices>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AddProductProvider(context.read<ApiServices>())
         ),
       ],
       child: MainApp(),

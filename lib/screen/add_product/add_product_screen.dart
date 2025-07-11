@@ -1,9 +1,15 @@
+import 'package:bizcopilot_flutter/static/state/add_product_result_state.dart';
 import 'package:bizcopilot_flutter/style/typography/biz_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+
+import '../../data/model/request/product_request_model.dart';
 
 import '../../../style/color/biz_colors.dart';
 import '../widget/biz_text_input.dart';
+
+import 'package:bizcopilot_flutter/provider/list_product/add_product_provider.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -33,6 +39,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
     stockController = TextEditingController();
     costPriceController = TextEditingController();
     priceController = TextEditingController();
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   Provider.of<AddProductProvider>(context, listen: false)
+    //       .addProduct();
+    // });
   }
 
   @override
@@ -206,18 +217,50 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       final name = nameController.text.trim();
                       final description = descriptionController.text.trim();
                       final stock = int.parse(stockController.text.trim());
-                      final costPrice = double.parse(
+                      final costPrice = int.parse(
                         costPriceController.text.trim(),
                       );
-                      final price = double.parse(priceController.text.trim());
+                      final price = int.parse(priceController.text.trim());
 
                       // TODO: Handle save logic
-                      print("Product Added:");
-                      print("Name: $name");
-                      print("Description: $description");
-                      print("Stock: $stock");
-                      print("Cost Price: $costPrice");
-                      print("Price: $price");
+                      // print("Product Added:");
+                      // print("Name: $name");
+                      // print("Description: $description");
+                      // print("Stock: $stock");
+                      // print("Cost Price: $costPrice");
+                      // print("Price: $price");
+                      
+
+                      Provider.of<AddProductProvider>(context, listen: false)
+                          .setReportModel = ProductRequestModel(
+                            name: name,
+                            description: description,
+                            inventory: stock,
+                            costPrice: costPrice,
+                            price: price,
+                          );
+
+                      Provider.of<AddProductProvider>(context, listen: false).addProduct();
+
+                      Consumer<AddProductProvider>(builder: (context, value, child) {
+                        return switch (value.resultState) {
+                          AddProductLoadingState() => const Center(child: CircularProgressIndicator()),
+                          AddProductLoadedState(data: var data) => Builder(builder: (context) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Product Added Successfully")),
+                            );
+                            Navigator.pop(context);
+                            return const SizedBox.shrink();
+                          }),
+                          AddProductErrorState(error: var message) => Builder(builder: (context) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(message)),
+                            );
+                            return const SizedBox.shrink();
+                          }),
+                          _ => const SizedBox.shrink(),
+                        }; 
+                      });
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
