@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import '../../../style/color/biz_colors.dart';
 import '../../../style/typography/biz_text_styles.dart';
 
+import '../../static/navigation/navigation_route.dart';
+import '../product_detail/product_detail_bottom_sheet.dart';
 import '../widget/gradient_button.dart';
 // import '../product_detail/product_detail_bottom_sheet.dart';
 
@@ -27,149 +29,229 @@ class ListProduct extends StatefulWidget {
 }
 
 class _ListProductState extends State<ListProduct> {
+  SortingType currentSortingType = SortingType.nothing;
+  SortingOrder currentSortingOrder = SortingOrder.ascending;
 
-  List<Products> unsortedAllProducts = [];
-  List<Products> sortedAllProducts = [];
-
-    void initState() {
-      super.initState();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Provider.of<ListProductProvider>(
-          context,
-          listen: false,
-        ).getAllListProducts();
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ListProductProvider>(
+        context,
+        listen: false,
+      ).getAllListProducts();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-        body: Padding(
-          padding: EdgeInsets.only(top: statusBarHeight + 24, left: 24, right: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, 
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "List Product",
-                    style: BizTextStyles.titleLargeBold.copyWith(
-                      color: BizColors.colorText.getColor(context),
-                      fontSize: 24,
-                    ),
+      body: Padding(
+        padding: EdgeInsets.only(
+          top: statusBarHeight + 24,
+          left: 24,
+          right: 24,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "List Product",
+                  style: BizTextStyles.titleLargeBold.copyWith(
+                    color: BizColors.colorText.getColor(context),
+                    fontSize: 24,
                   ),
-                  GradientButton(
-                    label: 'Add Product',
-                    icon: Icons.add,
-                    borderRadius: BorderRadiusGeometry.all(Radius.circular(8)),
-                    padding: EdgeInsetsGeometry.all(8),
-                    gradient: LinearGradient(
-                      colors: [BizColors.colorPrimary.getColor(context), BizColors.colorPrimaryDark.getColor(context)],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0x26000000),
-                        blurRadius: 4,
-                        offset: Offset(0, 0),
-                      ),
+                ),
+                GradientButton(
+                  label: 'Add Product',
+                  icon: Icons.add,
+                  borderRadius: BorderRadiusGeometry.all(Radius.circular(8)),
+                  padding: EdgeInsetsGeometry.all(8),
+                  gradient: LinearGradient(
+                    colors: [
+                      BizColors.colorPrimary.getColor(context),
+                      BizColors.colorPrimaryDark.getColor(context),
                     ],
-                    onPressed: () => print('add tapped'),
                   ),
-                ],
-              ),
-              SizedBox(height: 16),
-              InkWell(
-                onTap: () async {
-                  final SortingType? selectedSorting = await showModalBottomSheet(
-                    context: context, 
-                    isScrollControlled: true,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-                    builder: (context) => FilterProductSheet()
-                  );
-                  if (selectedSorting != null) {
-                    List<Products> result;
-                    switch (selectedSorting) {
-                      case SortingType.nothing:
-                        result = unsortedAllProducts;
-                      case SortingType.name:
-                        result = unsortedAllProducts.sortedBy((product) => product.name ?? "");
-                      case SortingType.price:
-                        result = unsortedAllProducts.sortedBy((product) => product.price ?? 0.0);
-                      case SortingType.time:
-                        result = unsortedAllProducts.sortedBy((product) => product.updatedAt ?? product.createdAt ?? "");
-                      case SortingType.stock:
-                        result = unsortedAllProducts.sortedBy((product) => product.inventory ?? 0);
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0x26000000),
+                      blurRadius: 4,
+                      offset: Offset(0, 0),
+                    ),
+                  ],
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      NavigationRoute.addProductRoute.name,
+                    );
+                  },
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+
+            Row(
+              children: [
+                Spacer(),
+                InkWell(
+                  onTap: () async {
+                    final SortingType? selectedSorting =
+                        await showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(16),
+                            ),
+                          ),
+                          builder:
+                              (context) => FilterProductSheet(
+                                currentSortingType: currentSortingType,
+                              ),
+                        );
+                    if (selectedSorting != null) {
+                      setState(() {
+                        currentSortingType = selectedSorting;
+                      });
+                      if (selectedSorting == SortingType.nothing) {
+                        setState(() {
+                          currentSortingOrder = SortingOrder.ascending;
+                        });
+                      }
+                      final productProvider = Provider.of<ListProductProvider>(
+                        context,
+                        listen: false,
+                      );
+                      productProvider.sortProducts(
+                        type: currentSortingType,
+                        order: currentSortingOrder,
+                      );
                     }
-                  }
-                  setState(() {
-                    sortedAllProducts = unsortedAllProducts;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0x26000000),
-                        blurRadius: 4,
-                        offset: const Offset(0, 0),
-                      ),
-                    ]
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0x26000000),
+                          blurRadius: 4,
+                          offset: const Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                    child: Icon(Icons.sort),
                   ),
-                  child: Icon(Icons.sort),
-                )
-              ),
-              SizedBox(height: 8),
-              Consumer<ListProductProvider>(builder: (context, value, child) {
+                ),
+
+                SizedBox(width: 10),
+
+                InkWell(
+                  onTap: () async {
+                    if (SortingType.nothing == currentSortingType ||
+                        SortingOrder.descending == currentSortingOrder) {
+                      setState(() {
+                        currentSortingOrder = SortingOrder.ascending;
+                      });
+                    } else {
+                      setState(() {
+                        currentSortingOrder = SortingOrder.descending;
+                      });
+                    }
+
+                    final productProvider = Provider.of<ListProductProvider>(
+                      context,
+                      listen: false,
+                    );
+                    productProvider.sortProducts(
+                      type: currentSortingType,
+                      order: currentSortingOrder,
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0x26000000),
+                          blurRadius: 4,
+                          offset: const Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      currentSortingOrder == SortingOrder.ascending
+                          ? Icons.arrow_upward
+                          : Icons.arrow_downward,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 8),
+            Consumer<ListProductProvider>(
+              builder: (context, value, child) {
                 switch (value.resultState) {
-                  case ListProductLoadingState(): 
+                  case ListProductLoadingState():
                     return const CircularProgressIndicator();
                   case ListProductLoadedState(data: var data):
-                    if (unsortedAllProducts.isEmpty) {
-                      unsortedAllProducts = data;
-                      sortedAllProducts = data;
-                    }
-                    return Expanded(child: MediaQuery.removePadding(context: context, removeTop: true, child: _listProductView(sortedAllProducts)));
-                  case ListProductErrorState(error: var message): 
+                    final products =
+                        context.read<ListProductProvider>().sortedAllProducts;
+                    return Expanded(
+                      child: MediaQuery.removePadding(
+                        context: context,
+                        removeTop: true,
+                        child: _listProductView(products),
+                      ),
+                    );
+                  case ListProductErrorState(error: var message):
                     return Text(message);
                   default:
                     return const SizedBox();
-                };
-              },),
-            ],
-          )
+                }
+                ;
+              },
+            ),
+          ],
         ),
+      ),
     );
   }
 
-Widget _listProductView(List<Products> allProducts) {
-    
+  Widget _listProductView(List<Products> allProducts) {
     return ListView.builder(
-        itemCount: allProducts.length,
-        itemBuilder: (context, index) {
-          double spacePadding = 21.0;
-          if (index == allProducts.length - 1) {
-            spacePadding = 0.0;
-          }
-            final itemData = unsortedAllProducts[index];
-            return ListProductCell(
-              product: itemData, 
-              spacePadding: spacePadding, 
-              onPressed: () {
-                // showModalBottomSheet<dynamic>(
-                //   context: context,
-                //   isScrollControlled: true,
-                //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-                //   builder: (context) => ProductDetailBottomSheet(product: itemData)
-                // );
-              },
-            );
+      itemCount: allProducts.length,
+      itemBuilder: (context, index) {
+        double spacePadding = 21.0;
+        if (index == allProducts.length - 1) {
+          spacePadding = 0.0;
         }
+        final itemData = allProducts[index];
+        return ListProductCell(
+          product: itemData,
+          spacePadding: spacePadding,
+          onPressed: () {
+            showModalBottomSheet<dynamic>(
+              context: context,
+              isScrollControlled: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              builder: (context) => ProductDetailBottomSheet(product: itemData),
+            );
+          },
+        );
+      },
     );
   }
 }
@@ -179,8 +261,12 @@ class ListProductCell extends StatelessWidget {
   final double spacePadding;
   final VoidCallback onPressed;
 
-
-  const ListProductCell({required this.product, required this.spacePadding, required this.onPressed, super.key});
+  const ListProductCell({
+    required this.product,
+    required this.spacePadding,
+    required this.onPressed,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -189,68 +275,73 @@ class ListProductCell extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.only(bottom: spacePadding),
         child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0x26000000),
-                  blurRadius: 4,
-                  offset: const Offset(0, 0),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0x26000000),
+                blurRadius: 4,
+                offset: const Offset(0, 0),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  "assets/images/testlistimage.png",
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.fill,
                 ),
-              ]
-            ),
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                    ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
-                            "assets/images/testlistimage.png",
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.fill,
-                        )
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "${product.name}",
+                      style: BizTextStyles.titleMediumBold.copyWith(
+                        color: BizColors.colorText.getColor(context),
+                      ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: 
-                        Column(crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("${product.name}",
-                              style: BizTextStyles.titleMediumBold.copyWith(
-                                  color: BizColors.colorText.getColor(context),
-                              ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text("${product.description}",
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 3,
-                              textAlign: TextAlign.justify,
-                              style: BizTextStyles.titleSmall.copyWith(
-                                  color: BizColors.colorText.getColor(context),
-                              ),
-                          ),
-                          const SizedBox(height: 18),
-                          Text("${product.price}",
-                              style: BizTextStyles.titleSmallBold.copyWith(
-                                  color: BizColors.colorText.getColor(context),
-                              ),
-                          ),
-                        ],
-                      )
-                    )
-                ],
-            ),
-        )
+                    const SizedBox(height: 4),
+                    Text(
+                      "${product.description}",
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 3,
+                      textAlign: TextAlign.justify,
+                      style: BizTextStyles.titleSmall.copyWith(
+                        color: BizColors.colorText.getColor(context),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      "${product.price}",
+                      style: BizTextStyles.titleSmallBold.copyWith(
+                        color: BizColors.colorText.getColor(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
 class FilterProductSheet extends StatefulWidget {
-  const FilterProductSheet({super.key});
+  final SortingType currentSortingType;
+
+  const FilterProductSheet({super.key, required this.currentSortingType});
 
   @override
   State<FilterProductSheet> createState() => _ProductFilterState();
@@ -258,26 +349,44 @@ class FilterProductSheet extends StatefulWidget {
 
 enum SortingType { nothing, name, price, time, stock }
 
+enum SortingOrder { ascending, descending }
+
 class _ProductFilterState extends State<FilterProductSheet> {
-  SortingType? _character = SortingType.nothing;
+  late SortingType _selectedType;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _selectedType = widget.currentSortingType;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = BizColors.colorPrimary.getColor(context);
+
     return SafeArea(
       child: Padding(
         padding: EdgeInsetsGeometry.directional(start: 24, end: 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Sort Data"),
+            const SizedBox(height: 24),
+
+            Text(
+              "Sort Data",
+              style: BizTextStyles.titleLargeBold.copyWith(
+                color: BizColors.colorBlack.getColor(context),
+              ),
+            ),
             ListTile(
               title: const Text('Nothing'),
               leading: Radio<SortingType>(
                 value: SortingType.nothing,
-                groupValue: _character,
+                groupValue: _selectedType,
                 onChanged: (SortingType? value) {
                   setState(() {
-                    _character = value;
+                    _selectedType = value!;
                   });
                 },
               ),
@@ -286,23 +395,68 @@ class _ProductFilterState extends State<FilterProductSheet> {
               title: const Text('Name'),
               leading: Radio<SortingType>(
                 value: SortingType.name,
-                groupValue: _character,
+                groupValue: _selectedType,
                 onChanged: (SortingType? value) {
                   setState(() {
-                    _character = value;
+                    _selectedType = value!;
+                  });
+                },
+              ),
+            ),
+
+            ListTile(
+              title: const Text('Price'),
+              leading: Radio<SortingType>(
+                value: SortingType.price,
+                groupValue: _selectedType,
+                onChanged: (SortingType? value) {
+                  setState(() {
+                    _selectedType = value!;
+                  });
+                },
+              ),
+            ),
+            ListTile(
+              title: const Text('Time'),
+              leading: Radio<SortingType>(
+                value: SortingType.time,
+                groupValue: _selectedType,
+                onChanged: (SortingType? value) {
+                  setState(() {
+                    _selectedType = value!;
+                  });
+                },
+              ),
+            ),
+            ListTile(
+              title: const Text('Stock'),
+              leading: Radio<SortingType>(
+                value: SortingType.stock,
+                groupValue: _selectedType,
+                onChanged: (SortingType? value) {
+                  setState(() {
+                    _selectedType = value!;
                   });
                 },
               ),
             ),
             ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(primaryColor),
+              ),
               onPressed: () {
-                Navigator.pop(context, _character); // Return selected value
+                Navigator.pop(context, _selectedType);
               },
-              child: const Text("Apply Sorting"),
-            )
+              child: Text(
+                "Apply Sorting",
+                style: BizTextStyles.button.copyWith(
+                  color: BizColors.colorWhite.getColor(context),
+                ),
+              ),
+            ),
           ],
         ),
-      )
+      ),
     );
   }
 }

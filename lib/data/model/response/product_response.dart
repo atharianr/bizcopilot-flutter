@@ -4,7 +4,10 @@ class DataProductResponseModel {
   DataProductResponseModel({this.data});
 
   DataProductResponseModel.fromJson(Map<String, dynamic> json) {
-    data = json['data'] != null ? new ProductResponseModel.fromJson(json['data']) : null;
+    data =
+        json['data'] != null
+            ? new ProductResponseModel.fromJson(json['data'])
+            : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -22,9 +25,10 @@ class ProductResponseModel {
   ProductResponseModel({this.getAllProducts});
 
   ProductResponseModel.fromJson(Map<String, dynamic> json) {
-    getAllProducts = json['getAllProducts'] != null
-        ? new GetAllProducts.fromJson(json['getAllProducts'])
-        : null;
+    getAllProducts =
+        json['getAllProducts'] != null
+            ? new GetAllProducts.fromJson(json['getAllProducts'])
+            : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -70,16 +74,17 @@ class Products {
   String? createdAt;
   String? updatedAt;
 
-  Products(
-      {this.id,
-      this.name,
-      this.description,
-      this.userId,
-      this.price,
-      this.costPrice,
-      this.inventory,
-      this.createdAt,
-      this.updatedAt});
+  Products({
+    this.id,
+    this.name,
+    this.description,
+    this.userId,
+    this.price,
+    this.costPrice,
+    this.inventory,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Products.fromJson(Map<String, dynamic> json) {
     id = json['id'];
