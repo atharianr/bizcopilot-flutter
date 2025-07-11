@@ -7,6 +7,7 @@ import 'package:bizcopilot_flutter/data/model/response/daily_reports_response.da
 import 'package:bizcopilot_flutter/data/model/response/example_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/home_widgets_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/product_response.dart';
+import 'package:bizcopilot_flutter/data/model/request/product_request_model.dart';
 
 import 'utils/base_network.dart';
 
@@ -51,6 +52,17 @@ class ApiServices {
       parser: (json) => AddReportResponse.fromJson(json),
     );
     return response;
+  }
+
+  Future<ExampleResponse> addProduct(ProductRequestModel request) {
+    final uri = Uri.parse("${Constant.baseUrl}/product/");
+
+    return BaseNetwork.post<ExampleResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      body: request.toJson(),
+      parser: (json) => ExampleResponse.fromJson(json),
+    );
   }
 
   Future<ExampleResponse> exampleApiHit(String id, String name, String review) {
