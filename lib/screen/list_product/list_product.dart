@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../style/color/biz_colors.dart';
 import '../../../style/typography/biz_text_styles.dart';
 
+import '../../static/navigation/navigation_route.dart';
 import '../widget/gradient_button.dart';
 import '../product_detail/product_detail_bottom_sheet.dart';
 
@@ -46,7 +47,7 @@ class _ListProductState extends State<ListProduct> {
         body: Padding(
           padding: EdgeInsets.only(top: statusBarHeight + 24, left: 24, right: 24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, 
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,7 +74,12 @@ class _ListProductState extends State<ListProduct> {
                         offset: Offset(0, 0),
                       ),
                     ],
-                    onPressed: () => print('add tapped'),
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        NavigationRoute.addProductRoute.name,
+                      );
+                    },
                   ),
                 ],
               ),
@@ -195,7 +201,7 @@ class ListProductCell extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: 
+                      child:
                         Column(crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text("${product.name}",

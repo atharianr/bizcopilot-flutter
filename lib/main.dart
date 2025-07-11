@@ -4,11 +4,13 @@ import 'package:bizcopilot_flutter/provider/daily_reports/home_widgets_provider.
 import 'package:bizcopilot_flutter/provider/example/example_api_provider.dart';
 import 'package:bizcopilot_flutter/provider/main/index_nav_provider.dart';
 import 'package:bizcopilot_flutter/provider/list_product/list_product_provider.dart';
+import 'package:bizcopilot_flutter/screen/add_product/add_product_screen.dart';
 import 'package:bizcopilot_flutter/screen/forecast/forecast_screen.dart';
 import 'package:bizcopilot_flutter/screen/main/main_screen.dart';
 import 'package:bizcopilot_flutter/screen/reports/reports_screen.dart';
 import 'package:bizcopilot_flutter/static/navigation/navigation_route.dart';
 import 'package:bizcopilot_flutter/style/theme/biz_theme.dart';
+import 'package:bizcopilot_flutter/provider/list_product/add_product_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,6 +39,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => ExampleApiProvider(context.read<ApiServices>()),
         ),
+        ChangeNotifierProvider(
+          create: (context) => AddProductProvider(context.read<ApiServices>())
+        ),
       ],
       child: MainApp(),
     ),
@@ -58,6 +63,8 @@ class MainApp extends StatelessWidget {
         NavigationRoute.mainRoute.name: (context) => const MainScreen(),
         NavigationRoute.forecastRoute.name: (context) => const ForecastScreen(),
         NavigationRoute.reportsRoute.name: (context) => const ReportsScreen(),
+        NavigationRoute.addProductRoute.name:
+            (context) => const AddProductScreen(),
         // NavigationRoute.detailRoute.name:
         //     (context) => DetailScreen(
         //       restaurantId:
