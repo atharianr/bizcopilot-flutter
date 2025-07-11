@@ -45,7 +45,7 @@ class ListProductProvider extends ChangeNotifier {
           sortedAllProducts = unsortedAllProducts;
           break;
         case SortingType.name:
-          sortedAllProducts = unsortedAllProducts.sortedBy((product) => product.name ?? "");
+          sortedAllProducts = unsortedAllProducts.sortedBy((product) => product.name?.toLowerCase() ?? "");
           break;
         case SortingType.price:
           sortedAllProducts = unsortedAllProducts.sortedBy((product) => product.price ?? 0.0);
@@ -56,6 +56,11 @@ class ListProductProvider extends ChangeNotifier {
         case SortingType.stock:
           sortedAllProducts = unsortedAllProducts.sortedBy((product) => product.inventory ?? 0);
       }
+    
+    if (order == SortingOrder.descending) {
+      sortedAllProducts = sortedAllProducts.reversed.toList();
+    }
+
     _resultState = ListProductLoadedState(sortedAllProducts);
     notifyListeners();
   }

@@ -8,17 +8,20 @@ import '../../data/model/request/product_request_model.dart';
 
 import '../../../style/color/biz_colors.dart';
 import '../widget/biz_text_input.dart';
+import '../../data/model/response/product_response.dart';
 
 import 'package:bizcopilot_flutter/provider/list_product/add_product_provider.dart';
 
-class AddProductScreen extends StatefulWidget {
-  const AddProductScreen({super.key});
+class EditProductScreen extends StatefulWidget {
+  final Products product;
+
+  const EditProductScreen({super.key, required this.product});
 
   @override
-  State<AddProductScreen> createState() => _AddProductScreenState();
+  State<EditProductScreen> createState() => _EditProductScreenState();
 }
 
-class _AddProductScreenState extends State<AddProductScreen> {
+class _EditProductScreenState extends State<EditProductScreen> {
   late TextEditingController nameController;
   late TextEditingController descriptionController;
   late TextEditingController stockController;
@@ -34,16 +37,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
   @override
   void initState() {
     super.initState();
-    nameController = TextEditingController();
-    descriptionController = TextEditingController();
-    stockController = TextEditingController();
-    costPriceController = TextEditingController();
-    priceController = TextEditingController();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   Provider.of<AddProductProvider>(context, listen: false)
-    //       .addProduct();
-    // });
-
+    nameController = TextEditingController(text: widget.product.name);
+    descriptionController = TextEditingController(text: widget.product.description);
+    stockController = TextEditingController(text: widget.product.inventory.toString());
+    costPriceController = TextEditingController(text: widget.product.costPrice.toString());
+    priceController = TextEditingController(text: widget.product.price.toString());
   }
 
   @override
@@ -116,7 +114,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               },
             ),
             const SizedBox(width: 4),
-            const Text("Add Product"),
+            const Text("Edit Product"),
           ],
         ),
       ),
@@ -231,40 +229,40 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       // print("Price: $price");
                       
 
-                      Provider.of<AddProductProvider>(context, listen: false)
-                          .setReportModel = ProductRequestModel(
-                            name: name,
-                            description: description,
-                            inventory: stock,
-                            costPrice: costPrice,
-                            price: price,
-                          );
+                      // Provider.of<EditProductProvider>(context, listen: false)
+                      //     .setReportModel = ProductRequestModel(
+                      //       name: name,
+                      //       description: description,
+                      //       inventory: stock,
+                      //       costPrice: costPrice,
+                      //       price: price,
+                      //     );
 
-                      Provider.of<AddProductProvider>(context, listen: false).addProduct();
+                      // Provider.of<EditProductProvider>(context, listen: false).EditProduct();
 
-                      Consumer<AddProductProvider>(builder: (context, value, child) {
-                        return switch (value.resultState) {
-                          AddProductLoadingState() => const Center(child: CircularProgressIndicator()),
-                          AddProductLoadedState(data: var data) => Builder(builder: (context) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Product Added Successfully")),
-                            );
-                            Navigator.pop(context);
-                            return const SizedBox.shrink();
-                          }),
-                          AddProductErrorState(error: var message) => Builder(builder: (context) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(message)),
-                            );
-                            return const SizedBox.shrink();
-                          }),
-                          _ => const SizedBox.shrink(),
-                        }; 
-                      });
+                      // Consumer<EditProductProvider>(builder: (context, value, child) {
+                      //   return switch (value.resultState) {
+                      //     EditProductLoadingState() => const Center(child: CircularProgressIndicator()),
+                      //     EditProductLoadedState(data: var data) => Builder(builder: (context) {
+                      //       ScaffoldMessenger.of(context).showSnackBar(
+                      //           const SnackBar(content: Text("Product Edited Successfully")),
+                      //       );
+                      //       Navigator.pop(context);
+                      //       return const SizedBox.shrink();
+                      //     }),
+                      //     EditProductErrorState(error: var message) => Builder(builder: (context) {
+                      //       ScaffoldMessenger.of(context).showSnackBar(
+                      //           SnackBar(content: Text(message)),
+                      //       );
+                      //       return const SizedBox.shrink();
+                      //     }),
+                      //     _ => const SizedBox.shrink(),
+                      //   }; 
+                      // });
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("Product Added Successfully"),
+                          content: Text("Product Edited Successfully"),
                         ),
                       );
 
@@ -272,7 +270,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     }
                   },
                   child: Text(
-                    "Add Product",
+                    "Edit Product",
                     style: BizTextStyles.button.copyWith(
                       color: BizColors.colorWhite.getColor(context),
                     ),
