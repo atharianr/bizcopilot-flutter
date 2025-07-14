@@ -165,21 +165,15 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
               productProvider.resultState is ListProductLoadingState
                   ? const ShimmerCard(height: 48)
                   : BizDropDown(
-                    value:
-                        productList
-                            .firstWhere(
-                              (e) => e.id == model.product?.id,
-                              orElse: () => Products(),
-                            )
-                            .name,
+                    value: model.product,
                     hintText: "Product",
-                    items: productList.map((e) => e.name ?? '').toList(),
-                    onChanged: (index, value) {
+                    items: productList,
+                    onChanged: (value) {
                       provider.setReportModel = AddReportModel(
-                        name: value,
+                        name: value?.name,
                         description: model.description,
                         price: model.price,
-                        product: productList[index],
+                        product: value,
                         date: model.date,
                         type: ReportType.sales,
                       );
@@ -279,9 +273,8 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                   context: context,
                   initialDate:
                       model.date != null && model.date!.isNotEmpty
-                          ? DateTime.parse(model.date!) // parse "2025-07-08"
+                          ? DateTime.parse(model.date!)
                           : DateTime.now(),
-                  // fallback if null or empty
                   firstDate: DateTime(2000),
                   lastDate: DateTime(2100),
                   builder: (context, child) {

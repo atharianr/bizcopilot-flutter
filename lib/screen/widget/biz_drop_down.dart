@@ -1,13 +1,14 @@
+import 'package:bizcopilot_flutter/data/model/response/product_response.dart';
 import 'package:flutter/material.dart';
 
 import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
 
 class BizDropDown extends StatelessWidget {
-  final String? value;
+  final Products? value;
   final String hintText;
-  final List<String> items;
-  final void Function(int index, String? value) onChanged;
+  final List<Products> items;
+  final void Function(Products? value) onChanged;
   final String? errorText;
 
   const BizDropDown({
@@ -21,6 +22,8 @@ class BizDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("value -> $value");
+    print("items -> $items");
     final primaryColor = BizColors.colorPrimary.getColor(context);
     final grayColor = BizColors.colorGrey.getColor(context);
     final errorColor = BizColors.colorOrangeDark.getColor(context);
@@ -32,15 +35,15 @@ class BizDropDown extends StatelessWidget {
       );
     }
 
-    return DropdownButtonFormField<String>(
-      value: value?.isNotEmpty == true ? value : null,
+    return DropdownButtonFormField<Products>(
+      value: value,
       hint: Text(hintText, style: TextStyle(color: grayColor)),
       items:
           items.map((item) {
             return DropdownMenuItem(
               value: item,
               child: Text(
-                item,
+                item.name.toString(),
                 style: BizTextStyles.bodyLargeMedium.copyWith(
                   color: BizColors.colorText.getColor(context),
                 ),
@@ -48,8 +51,7 @@ class BizDropDown extends StatelessWidget {
             );
           }).toList(),
       onChanged: (selectedValue) {
-        final index = items.indexOf(selectedValue ?? '');
-        onChanged(index, selectedValue);
+        onChanged(selectedValue);
       },
       style: BizTextStyles.bodyLargeMedium.copyWith(
         color: BizColors.colorText.getColor(context),
