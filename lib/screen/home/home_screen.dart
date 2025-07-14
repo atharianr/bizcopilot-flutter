@@ -53,8 +53,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
-            SliverToBoxAdapter(child: _buildGreetingSection(context)),
+            SliverPadding(
+              padding: EdgeInsets.only(
+                top: 24 + MediaQuery.of(context).padding.top,
+              ),
+              sliver: SliverToBoxAdapter(child: _buildGreetingSection(context)),
+            ),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
             SliverToBoxAdapter(
               child: Consumer<HomeWidgetsProvider>(

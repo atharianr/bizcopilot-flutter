@@ -44,7 +44,12 @@ class _ReportsScreenState extends State<ReportsScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.only(
+                top: 24 + MediaQuery.of(context).padding.top,
+                bottom: 24,
+                left: 24,
+                right: 24,
+              ),
               sliver: SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
