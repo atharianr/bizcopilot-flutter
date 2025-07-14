@@ -8,7 +8,7 @@ class BizDropDown extends StatelessWidget {
   final Products? value;
   final String hintText;
   final List<Products> items;
-  final void Function(Products? value) onChanged;
+  final void Function(int? value) onChanged;
   final String? errorText;
 
   const BizDropDown({
@@ -33,13 +33,13 @@ class BizDropDown extends StatelessWidget {
       );
     }
 
-    return DropdownButtonFormField<Products>(
-      value: value,
+    return DropdownButtonFormField<int>(
+      value: value?.id,
       hint: Text(hintText, style: TextStyle(color: grayColor)),
       items:
           items.map((item) {
             return DropdownMenuItem(
-              value: item,
+              value: item.id,
               child: Text(
                 item.name.toString(),
                 style: BizTextStyles.bodyLargeMedium.copyWith(

@@ -8,6 +8,7 @@ class AddReportModel {
   Products? product;
   String? date;
   ReportType type;
+  bool isUpdate;
 
   AddReportModel({
     this.name,
@@ -16,5 +17,6 @@ class AddReportModel {
     this.product,
     this.date,
     this.type = ReportType.sales,
+    this.isUpdate = false,
   });
 }

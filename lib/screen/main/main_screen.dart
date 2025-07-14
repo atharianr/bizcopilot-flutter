@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
-import '../../provider/daily_reports/add_report_provider.dart';
 import '../../provider/main/index_nav_provider.dart';
 import '../../static/bottom_nav/bottom_nav.dart';
 import '../../style/color/biz_colors.dart';
@@ -59,7 +58,6 @@ class MainScreen extends StatelessWidget {
                 context: context,
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
-                // barrierColor: Colors.transparent,
                 builder: (context) => const AddReportBottomSheet(),
               );
             } else {

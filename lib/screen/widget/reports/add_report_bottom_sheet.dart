@@ -40,6 +40,8 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
             ? provider.addReportModel ?? AddReportModel()
             : AddReportModel();
 
+    model.isUpdate = widget.isUpdate;
+
     provider.resetErrors();
 
     if (!widget.isUpdate) provider.resetReportModel();
@@ -115,7 +117,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
             ),
             Center(
               child: Text(
-                model.date != null ? "Update Report" : "Add New Report",
+                model.isUpdate ? "Update Report" : "Add New Report",
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -169,11 +171,16 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                     hintText: "Product",
                     items: productList,
                     onChanged: (value) {
+                      final selectedProduct = productList.firstWhere(
+                        (product) => product.id == value,
+                        orElse: () => Products(),
+                      );
+
                       provider.setReportModel = AddReportModel(
-                        name: value?.name,
+                        name: selectedProduct.name,
                         description: model.description,
                         price: model.price,
-                        product: value,
+                        product: selectedProduct,
                         date: model.date,
                         type: ReportType.sales,
                       );
@@ -339,7 +346,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                           ),
                         )
                         : Text(
-                          model.date != null ? "Update Report" : "Add Report",
+                          model.isUpdate ? "Update Report" : "Add Report",
                           style: BizTextStyles.button.copyWith(
                             color: BizColors.colorWhite.getColor(context),
                           ),
