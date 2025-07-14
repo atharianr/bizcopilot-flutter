@@ -80,14 +80,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 return switch (value.resultState) {
                   DailyReportsLoadingState() => _buildDailyLoading(),
 
-                  DailyReportsLoadedState(dailyData: final data)
+                  DailyReportsLoadedState(reports: final data)
                       when data.isEmpty =>
                     SliverFillRemaining(
                       hasScrollBody: false,
                       child: _buildNoReportsAvailable(),
                     ),
 
-                  DailyReportsLoadedState(dailyData: final data) => SliverList(
+                  DailyReportsLoadedState(reports: final data) => SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final item = data[index];
                       return Padding(

@@ -2,12 +2,12 @@ import 'package:bizcopilot_flutter/constant/constant.dart';
 import 'package:bizcopilot_flutter/data/model/request/add_expense_report_request.dart';
 import 'package:bizcopilot_flutter/data/model/request/add_sale_report_request.dart';
 import 'package:bizcopilot_flutter/data/model/request/example_request.dart';
+import 'package:bizcopilot_flutter/data/model/request/product_request_model.dart';
 import 'package:bizcopilot_flutter/data/model/response/add_report_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/daily_reports_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/example_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/home_widgets_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/product_response.dart';
-import 'package:bizcopilot_flutter/data/model/request/product_request_model.dart';
 
 import 'utils/base_network.dart';
 
@@ -22,8 +22,10 @@ class ApiServices {
     );
   }
 
-  Future<MonthlyReportsResponse> getDailyReports() {
-    final uri = Uri.parse("${Constant.baseUrl}/report/monthly");
+  Future<MonthlyReportsResponse> getDailyReports([int days = 1]) {
+    final uri = Uri.parse(
+      Constant.baseUrl,
+    ).replace(path: "/report/all/", queryParameters: {"days": days.toString()});
 
     return BaseNetwork.get<MonthlyReportsResponse>(
       url: uri,

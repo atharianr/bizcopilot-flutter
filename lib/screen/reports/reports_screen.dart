@@ -4,14 +4,30 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/daily_reports/daily_reports_provider.dart';
-import '../../static/state/daily_reports_result_state.dart';
+import '../../static/state/monthly_reports_result_state.dart';
 import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
 import '../widget/reports/reports_card.dart';
 import '../widget/shimmer_card.dart';
 
-class ReportsScreen extends StatelessWidget {
+class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
+
+  @override
+  State<ReportsScreen> createState() => _ReportsScreenState();
+}
+
+class _ReportsScreenState extends State<ReportsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<DailyReportsProvider>(
+        context,
+        listen: false,
+      ).getMonthlyReports();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +38,7 @@ class ReportsScreen extends StatelessWidget {
           await Provider.of<DailyReportsProvider>(
             context,
             listen: false,
-          ).getDailyReports();
+          ).getMonthlyReports();
         },
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -54,19 +70,19 @@ class ReportsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               sliver: Consumer<DailyReportsProvider>(
                 builder: (context, value, child) {
-                  return switch (value.resultState) {
-                    DailyReportsLoadingState() => SliverToBoxAdapter(
+                  return switch (value.monthlyReportsResultState) {
+                    MonthlyReportsLoadingState() => SliverToBoxAdapter(
                       child: _buildLoading(),
                     ),
-                    DailyReportsLoadedState(monthlyData: final data)
+                    MonthlyReportsLoadedState(reports: final data)
                         when data.isEmpty =>
                       SliverFillRemaining(
                         hasScrollBody: false,
                         child: _buildEmptyState(),
                       ),
-                    DailyReportsLoadedState(monthlyData: final data) =>
+                    MonthlyReportsLoadedState(reports: final data) =>
                       _buildGroupedReports(data),
-                    DailyReportsErrorState(error: final message) =>
+                    MonthlyReportsErrorState(error: final message) =>
                       SliverToBoxAdapter(child: _buildError(message)),
                     _ => const SliverToBoxAdapter(child: SizedBox()),
                   };

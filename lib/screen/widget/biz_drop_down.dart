@@ -22,8 +22,6 @@ class BizDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("value -> $value");
-    print("items -> $items");
     final primaryColor = BizColors.colorPrimary.getColor(context);
     final grayColor = BizColors.colorGrey.getColor(context);
     final errorColor = BizColors.colorOrangeDark.getColor(context);
