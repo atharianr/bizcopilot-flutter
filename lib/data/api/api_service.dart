@@ -35,7 +35,7 @@ class ApiServices {
   }
 
   Future<AddReportResponse> addSaleReport(AddSaleReportRequest request) {
-    final uri = Uri.parse("${Constant.baseUrl}/sale");
+    final uri = Uri.parse("${Constant.baseUrl}/sale/");
     final response = BaseNetwork.post<AddReportResponse>(
       url: uri,
       headers: {"Content-Type": "application/json"},
@@ -46,12 +46,42 @@ class ApiServices {
   }
 
   Future<AddReportResponse> addExpenseReport(AddExpenseReportRequest request) {
-    final uri = Uri.parse("${Constant.baseUrl}/expense");
+    final uri = Uri.parse("${Constant.baseUrl}/expense/");
     final response = BaseNetwork.post<AddReportResponse>(
       url: uri,
       headers: {"Content-Type": "application/json"},
       body: request.toJson(),
       parser: (json) => AddReportResponse.fromJson(json),
+    );
+    return response;
+  }
+
+  Future<AddReportResponse> updateSaleReport(
+    AddSaleReportRequest request,
+    int? reportId,
+  ) {
+    final uri = Uri.parse("${Constant.baseUrl}/sale/$reportId");
+    final response = BaseNetwork.put<AddReportResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      body: request.toJson(),
+      parser: (json) => AddReportResponse.fromJson(json),
+      successCode: 200,
+    );
+    return response;
+  }
+
+  Future<AddReportResponse> updateExpenseReport(
+    AddExpenseReportRequest request,
+    int? reportId,
+  ) {
+    final uri = Uri.parse("${Constant.baseUrl}/expense/$reportId");
+    final response = BaseNetwork.put<AddReportResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      body: request.toJson(),
+      parser: (json) => AddReportResponse.fromJson(json),
+      successCode: 200,
     );
     return response;
   }

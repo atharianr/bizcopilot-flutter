@@ -13,7 +13,6 @@ class AddReportProvider extends ChangeNotifier {
 
   AddReportProvider(this._apiServices);
 
-  // Model
   AddReportModel? _addReportModel;
 
   AddReportModel? get addReportModel => _addReportModel;
@@ -134,7 +133,6 @@ class AddReportProvider extends ChangeNotifier {
     return isValid;
   }
 
-  // Submit
   Future<void> addReport() async {
     if (!validateInputs()) return;
 
@@ -159,6 +157,40 @@ class AddReportProvider extends ChangeNotifier {
           expenseDate: _addReportModel?.date,
         );
         await _apiServices.addExpenseReport(request);
+      }
+
+      _resultState = AddReportLoadedState(true);
+    } catch (e) {
+      _resultState = AddReportErrorState(e.getMessage());
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> updateReport(int? reportId) async {
+    if (!validateInputs()) return;
+
+    try {
+      _resultState = AddReportLoadingState();
+      notifyListeners();
+
+      if (_addReportModel!.type == ReportType.sales) {
+        final request = AddSaleReportRequest(
+          productId: _addReportModel?.product?.id,
+          userId: _addReportModel?.product?.userId ?? 1,
+          quantity: 1, // for removing stock by 1
+          saleDate: _addReportModel?.date,
+        );
+        await _apiServices.updateSaleReport(request, reportId);
+      } else {
+        final request = AddExpenseReportRequest(
+          userId: _addReportModel?.product?.userId ?? 1,
+          amount: _addReportModel?.price,
+          title: _addReportModel?.name,
+          description: _addReportModel?.description,
+          expenseDate: _addReportModel?.date,
+        );
+        await _apiServices.updateExpenseReport(request, reportId);
       }
 
       _resultState = AddReportLoadedState(true);

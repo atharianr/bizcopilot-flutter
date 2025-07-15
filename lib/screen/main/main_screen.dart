@@ -17,8 +17,6 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double statusBarHeight = MediaQuery.of(context).padding.top;
-
     return Scaffold(
       body: Consumer<IndexNavProvider>(
         builder: (context, value, child) {

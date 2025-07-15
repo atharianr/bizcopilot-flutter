@@ -17,9 +17,10 @@ import '../biz_text_input.dart';
 import '../shimmer_card.dart';
 
 class AddReportBottomSheet extends StatefulWidget {
+  final int? reportId;
   final bool isUpdate;
 
-  const AddReportBottomSheet({super.key, this.isUpdate = false});
+  const AddReportBottomSheet({super.key, this.reportId, this.isUpdate = false});
 
   @override
   State<AddReportBottomSheet> createState() => _AddReportBottomSheetState();
@@ -42,11 +43,9 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
 
     model.isUpdate = widget.isUpdate;
 
-    provider.resetErrors();
-
-    if (!widget.isUpdate) provider.resetReportModel();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      provider.resetErrors();
+      if (!widget.isUpdate) provider.resetReportModel();
       context.read<ListProductProvider>().getAllListProducts();
     });
 
@@ -329,7 +328,11 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                         ? null
                         : () async {
                           if (provider.validateInputs()) {
-                            await provider.addReport();
+                            if (model.isUpdate) {
+                              await provider.updateReport(widget.reportId);
+                            } else {
+                              await provider.addReport();
+                            }
                             if (context.mounted) {
                               Navigator.pop(context);
                             }
