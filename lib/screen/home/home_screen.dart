@@ -1,8 +1,10 @@
+import 'package:bizcopilot_flutter/provider/daily_reports/add_report_provider.dart';
 import 'package:bizcopilot_flutter/provider/daily_reports/daily_reports_provider.dart';
 import 'package:bizcopilot_flutter/provider/daily_reports/home_widgets_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../static/state/add_report_result_state.dart';
 import '../../static/state/daily_reports_result_state.dart';
 import '../../static/state/home_widgets_result_state.dart';
 import '../../style/color/biz_colors.dart';
@@ -25,11 +27,28 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<HomeWidgetsProvider>(context, listen: false).getHomeWidgets();
-      Provider.of<DailyReportsProvider>(
+      final homeWidgetsProvider = Provider.of<HomeWidgetsProvider>(
         context,
         listen: false,
-      ).getDailyReports();
+      );
+      final dailyReportsProvider = Provider.of<DailyReportsProvider>(
+        context,
+        listen: false,
+      );
+      final addReportProvider = Provider.of<AddReportProvider>(
+        context,
+        listen: false,
+      );
+
+      homeWidgetsProvider.getHomeWidgets();
+      dailyReportsProvider.getDailyReports();
+
+      addReportProvider.addListener(() {
+        final state = addReportProvider.resultState;
+        if (state is AddReportLoadedState) {
+          dailyReportsProvider.getDailyReports();
+        }
+      });
     });
   }
 
@@ -111,6 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 };
               },
             ),
+            SliverToBoxAdapter(child: SizedBox(height: 16)),
           ],
         ),
       ),

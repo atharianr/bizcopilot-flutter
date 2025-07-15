@@ -182,6 +182,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                         product: selectedProduct,
                         date: model.date,
                         type: ReportType.sales,
+                        isUpdate: model.isUpdate,
                       );
                     },
                     errorText: provider.productError,
@@ -206,6 +207,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                     product: model.product,
                     date: model.date,
                     type: model.type,
+                    isUpdate: model.isUpdate,
                   );
                 },
               ),
@@ -232,6 +234,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                     product: model.product,
                     date: model.date,
                     type: model.type,
+                    isUpdate: model.isUpdate,
                   );
                 },
               ),
@@ -258,6 +261,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                     product: model.product,
                     date: model.date,
                     type: model.type,
+                    isUpdate: model.isUpdate,
                   );
                 },
               ),
@@ -312,6 +316,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                     product: model.product,
                     date: formattedDate,
                     type: model.type,
+                    isUpdate: model.isUpdate,
                   );
                 }
               },

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../provider/daily_reports/add_report_provider.dart';
 import '../../provider/daily_reports/daily_reports_provider.dart';
+import '../../static/state/add_report_result_state.dart';
 import '../../static/state/monthly_reports_result_state.dart';
 import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
@@ -22,10 +24,23 @@ class _ReportsScreenState extends State<ReportsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<DailyReportsProvider>(
+      final dailyReportsProvider = Provider.of<DailyReportsProvider>(
         context,
         listen: false,
-      ).getMonthlyReports();
+      );
+      final addReportProvider = Provider.of<AddReportProvider>(
+        context,
+        listen: false,
+      );
+
+      dailyReportsProvider.getMonthlyReports();
+
+      addReportProvider.addListener(() {
+        final state = addReportProvider.resultState;
+        if (state is AddReportLoadedState) {
+          dailyReportsProvider.getMonthlyReports();
+        }
+      });
     });
   }
 

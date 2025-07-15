@@ -13,7 +13,7 @@ import 'utils/base_network.dart';
 
 class ApiServices {
   Future<HomeWidgetsResponse> getHomeWidgets() {
-    final uri = Uri.parse("${Constant.baseUrl}/home");
+    final uri = Uri.parse("${Constant.baseUrl}/home/");
 
     return BaseNetwork.get<HomeWidgetsResponse>(
       url: uri,
@@ -41,6 +41,7 @@ class ApiServices {
       headers: {"Content-Type": "application/json"},
       body: request.toJson(),
       parser: (json) => AddReportResponse.fromJson(json),
+      successCode: 200,
     );
     return response;
   }
@@ -52,6 +53,7 @@ class ApiServices {
       headers: {"Content-Type": "application/json"},
       body: request.toJson(),
       parser: (json) => AddReportResponse.fromJson(json),
+      successCode: 200,
     );
     return response;
   }
@@ -66,7 +68,6 @@ class ApiServices {
       headers: {"Content-Type": "application/json"},
       body: request.toJson(),
       parser: (json) => AddReportResponse.fromJson(json),
-      successCode: 200,
     );
     return response;
   }
@@ -81,7 +82,26 @@ class ApiServices {
       headers: {"Content-Type": "application/json"},
       body: request.toJson(),
       parser: (json) => AddReportResponse.fromJson(json),
-      successCode: 200,
+    );
+    return response;
+  }
+
+  Future<AddReportResponse> deleteSaleReport(int? reportId) {
+    final uri = Uri.parse("${Constant.baseUrl}/sale/$reportId");
+    final response = BaseNetwork.delete<AddReportResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      parser: (json) => AddReportResponse.fromJson(json),
+    );
+    return response;
+  }
+
+  Future<AddReportResponse> deleteExpenseReport(int? reportId) {
+    final uri = Uri.parse("${Constant.baseUrl}/expense/$reportId");
+    final response = BaseNetwork.delete<AddReportResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      parser: (json) => AddReportResponse.fromJson(json),
     );
     return response;
   }
