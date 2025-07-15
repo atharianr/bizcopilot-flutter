@@ -1,12 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bizcopilot_flutter/utils/extension_utils.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 typedef ResponseParser<T> = T Function(Map<String, dynamic> json);
 
 class BaseNetwork {
+  static final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 0,
+      errorMethodCount: 5,
+      colors: true,
+      printEmojis: true,
+      dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
+    ),
+  );
+
   static Future<T> get<T>({
     required Uri url,
     required Map<String, String> headers,
@@ -99,6 +109,12 @@ class BaseNetwork {
     try {
       http.Response response;
 
+      _logger.i('🚀 $method Request => $url');
+      _logger.d('Headers: ${jsonEncode(headers)}');
+      if (body != null) {
+        _logger.d('Body: ${jsonEncode(body)}');
+      }
+
       switch (method) {
         case 'GET':
           response = await http.get(url, headers: headers);
@@ -131,20 +147,37 @@ class BaseNetwork {
           throw Exception('Unsupported HTTP method: $method');
       }
 
+      _logger.i('✅ Response [${response.statusCode}] => $url');
+      _logger.d('Response Body: ${response.body}');
+
       if (response.statusCode == successCode) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
         return parser(json);
       } else {
+        _logger.e('❌ API Error [${response.statusCode}] => $url');
+        _logger.e('Error Body: ${response.body}');
         throw Exception('Request failed: ${response.statusCode}');
       }
-    } on SocketException {
+    } on SocketException catch (e, stackTrace) {
+      _logger.e('📡 No internet connection.', error: e, stackTrace: stackTrace);
       throw Exception('No internet connection. Please try again later.');
-    } on HttpException {
+    } on HttpException catch (e, stackTrace) {
+      _logger.e('🛑 HTTP exception.', error: e, stackTrace: stackTrace);
       throw Exception('Failed to communicate with the server.');
-    } on FormatException {
+    } on FormatException catch (e, stackTrace) {
+      _logger.e(
+        '⚠️ Format exception (Invalid JSON).',
+        error: e,
+        stackTrace: stackTrace,
+      );
       throw Exception('Bad response format from server.');
-    } catch (e) {
-      throw Exception('Unexpected error: ${e.getMessage()}');
+    } catch (e, stackTrace) {
+      _logger.e(
+        '🔥 Unexpected error: ${e.toString()}',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      throw Exception('Unexpected error: ${e.toString()}');
     }
   }
 }
