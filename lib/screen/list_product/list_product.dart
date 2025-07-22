@@ -321,7 +321,7 @@ class ListProductCell extends StatelessWidget {
                     ),
                     const SizedBox(height: 18),
                     Text(
-                      "${product.price}",
+                      "Rp. ${product.price}",
                       style: BizTextStyles.titleSmallBold.copyWith(
                         color: BizColors.colorText.getColor(context),
                       ),
@@ -346,7 +346,7 @@ class FilterProductSheet extends StatefulWidget {
   State<FilterProductSheet> createState() => _ProductFilterState();
 }
 
-enum SortingType { nothing, name, price, time, stock }
+enum SortingType { nothing, name, price, time, stock, cost_price, sold }
 
 enum SortingOrder { ascending, descending }
 
@@ -431,6 +431,30 @@ class _ProductFilterState extends State<FilterProductSheet> {
               title: const Text('Stock'),
               leading: Radio<SortingType>(
                 value: SortingType.stock,
+                groupValue: _selectedType,
+                onChanged: (SortingType? value) {
+                  setState(() {
+                    _selectedType = value!;
+                  });
+                },
+              ),
+            ),
+            ListTile(
+              title: const Text('Cost Price'),
+              leading: Radio<SortingType>(
+                value: SortingType.cost_price,
+                groupValue: _selectedType,
+                onChanged: (SortingType? value) {
+                  setState(() {
+                    _selectedType = value!;
+                  });
+                },
+              ),
+            ),
+            ListTile(
+              title: const Text('Sold'),
+              leading: Radio<SortingType>(
+                value: SortingType.sold,
                 groupValue: _selectedType,
                 onChanged: (SortingType? value) {
                   setState(() {

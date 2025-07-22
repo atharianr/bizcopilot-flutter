@@ -71,6 +71,7 @@ class Products {
   int? price;
   int? costPrice;
   int? inventory;
+  int? soldCount;
   String? createdAt;
   String? updatedAt;
 
@@ -82,6 +83,7 @@ class Products {
     this.price,
     this.costPrice,
     this.inventory,
+    this.soldCount,
     this.createdAt,
     this.updatedAt,
   });
@@ -94,6 +96,7 @@ class Products {
     price = json['price'];
     costPrice = json['cost_price'];
     inventory = json['inventory'];
+    soldCount = json['sold_count'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -107,6 +110,7 @@ class Products {
     data['price'] = this.price;
     data['cost_price'] = this.costPrice;
     data['inventory'] = this.inventory;
+    data['sold_count'] = this.soldCount;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     return data;

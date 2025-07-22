@@ -37,26 +37,42 @@ class ListProductProvider extends ChangeNotifier {
   }
 
   void sortProducts({
-    SortingType type = SortingType.nothing, 
-    SortingOrder order = SortingOrder.ascending
+    SortingType type = SortingType.nothing,
+    SortingOrder order = SortingOrder.ascending,
   }) {
-      switch (type) {
-        case SortingType.nothing:
-          sortedAllProducts = unsortedAllProducts;
-          break;
-        case SortingType.name:
-          sortedAllProducts = unsortedAllProducts.sortedBy((product) => product.name?.toLowerCase() ?? "");
-          break;
-        case SortingType.price:
-          sortedAllProducts = unsortedAllProducts.sortedBy((product) => product.price ?? 0.0);
-          break;
-        case SortingType.time:
-          sortedAllProducts = unsortedAllProducts.sortedBy((product) => product.updatedAt ?? product.createdAt ?? "");
-          break;
-        case SortingType.stock:
-          sortedAllProducts = unsortedAllProducts.sortedBy((product) => product.inventory ?? 0);
-      }
-    
+    switch (type) {
+      case SortingType.nothing:
+        sortedAllProducts = unsortedAllProducts;
+        break;
+      case SortingType.name:
+        sortedAllProducts = unsortedAllProducts.sortedBy(
+          (product) => product.name?.toLowerCase() ?? "",
+        );
+        break;
+      case SortingType.price:
+        sortedAllProducts = unsortedAllProducts.sortedBy(
+          (product) => product.price ?? 0.0,
+        );
+        break;
+      case SortingType.time:
+        sortedAllProducts = unsortedAllProducts.sortedBy(
+          (product) => product.updatedAt ?? product.createdAt ?? "",
+        );
+        break;
+      case SortingType.stock:
+        sortedAllProducts = unsortedAllProducts.sortedBy(
+          (product) => product.inventory ?? 0,
+        );
+      case SortingType.cost_price:
+        sortedAllProducts = unsortedAllProducts.sortedBy(
+          (product) => product.costPrice ?? 0.0,
+        );
+      case SortingType.sold:
+        sortedAllProducts = unsortedAllProducts.sortedBy(
+          (product) => product.soldCount ?? 0,
+        );
+    }
+
     if (order == SortingOrder.descending) {
       sortedAllProducts = sortedAllProducts.reversed.toList();
     }
