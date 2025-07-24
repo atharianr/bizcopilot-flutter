@@ -291,8 +291,8 @@ class ListProductCell extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  "assets/images/testlistimage.png",
+                child: Image.network(
+                  "${product.imageUrl}",
                   width: 100,
                   height: 100,
                   fit: BoxFit.fill,

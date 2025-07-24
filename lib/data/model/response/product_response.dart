@@ -72,8 +72,11 @@ class Products {
   int? costPrice;
   int? inventory;
   int? soldCount;
+  String? imageUrl;
+  bool? isDeleted;
   String? createdAt;
   String? updatedAt;
+  Null? deletedAt;
 
   Products({
     this.id,
@@ -84,8 +87,11 @@ class Products {
     this.costPrice,
     this.inventory,
     this.soldCount,
+    this.imageUrl,
+    this.isDeleted,
     this.createdAt,
     this.updatedAt,
+    this.deletedAt,
   });
 
   Products.fromJson(Map<String, dynamic> json) {
@@ -97,8 +103,11 @@ class Products {
     costPrice = json['cost_price'];
     inventory = json['inventory'];
     soldCount = json['sold_count'];
+    imageUrl = json['image_url'];
+    isDeleted = json['is_deleted'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
+    deletedAt = json['deleted_at'];
   }
 
   Map<String, dynamic> toJson() {
@@ -111,8 +120,11 @@ class Products {
     data['cost_price'] = this.costPrice;
     data['inventory'] = this.inventory;
     data['sold_count'] = this.soldCount;
+    data['image_url'] = this.imageUrl;
+    data['is_deleted'] = this.isDeleted;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    data['deleted_at'] = this.deletedAt;
     return data;
   }
 }
