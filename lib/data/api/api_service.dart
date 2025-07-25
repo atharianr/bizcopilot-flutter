@@ -6,6 +6,7 @@ import 'package:bizcopilot_flutter/data/model/request/product_request_model.dart
 import 'package:bizcopilot_flutter/data/model/response/add_report_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/daily_reports_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/example_response.dart';
+import 'package:bizcopilot_flutter/data/model/response/forecast_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/home_widgets_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/product_response.dart';
 
@@ -102,6 +103,32 @@ class ApiServices {
       url: uri,
       headers: {"Content-Type": "application/json"},
       parser: (json) => AddReportResponse.fromJson(json),
+    );
+    return response;
+  }
+
+  Future<ForecastResponse> getSaleForecast(String lat, String long) {
+    final uri = Uri.parse(Constant.baseUrl).replace(
+      path: "/sale/forecast/",
+      queryParameters: {"lat": lat.toString(), "long": long.toString()},
+    );
+    final response = BaseNetwork.get<ForecastResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      parser: (json) => ForecastResponse.fromJson(json),
+    );
+    return response;
+  }
+
+  Future<ForecastResponse> getExpenseForecast(String lat, String long) {
+    final uri = Uri.parse(Constant.baseUrl).replace(
+      path: "/expense/forecast/",
+      queryParameters: {"lat": lat.toString(), "long": long.toString()},
+    );
+    final response = BaseNetwork.get<ForecastResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      parser: (json) => ForecastResponse.fromJson(json),
     );
     return response;
   }
