@@ -62,7 +62,7 @@ class MonthlyData {
 
 class SalesData {
   String? x;
-  int? y;
+  double? y;
 
   SalesData({this.x, this.y});
 

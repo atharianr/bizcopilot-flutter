@@ -15,10 +15,18 @@ class ForecastProvider extends ChangeNotifier {
 
   SaleForecastResultState get saleResultState => _saleResultState;
 
+  String _saleForecastSummary = "";
+
+  String get saleForecastSummary => _saleForecastSummary;
+
   // Expense Forecast State
   ExpenseForecastResultState _expenseResultState = ExpenseForecastNoneState();
 
   ExpenseForecastResultState get expenseResultState => _expenseResultState;
+
+  String _expenseForecastSummary = "";
+
+  String get expenseForecastSummary => _expenseForecastSummary;
 
   // Fetch Sale Forecast
   Future<void> getSaleForecast() async {
@@ -26,8 +34,9 @@ class ForecastProvider extends ChangeNotifier {
       _saleResultState = SaleForecastLoadingState();
       notifyListeners();
 
-      final result = await _apiServices.getSaleForecast("", "");
+      final result = await _apiServices.getSaleForecast("-6.2088", "106.8456");
       _saleResultState = SaleForecastLoadedState(result);
+      _saleForecastSummary = result.monthlyData?.analysisResult?.summary ?? "";
       notifyListeners();
     } catch (e) {
       _saleResultState = SaleForecastErrorState(e.getMessage());
@@ -41,8 +50,13 @@ class ForecastProvider extends ChangeNotifier {
       _expenseResultState = ExpenseForecastLoadingState();
       notifyListeners();
 
-      final result = await _apiServices.getExpenseForecast("", "");
+      final result = await _apiServices.getExpenseForecast(
+        "-6.2088",
+        "106.8456",
+      );
       _expenseResultState = ExpenseForecastLoadedState(result);
+      _expenseForecastSummary =
+          result.monthlyData?.analysisResult?.summary ?? "";
       notifyListeners();
     } catch (e) {
       _expenseResultState = ExpenseForecastErrorState(e.getMessage());

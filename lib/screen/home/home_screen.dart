@@ -1,6 +1,7 @@
 import 'package:bizcopilot_flutter/provider/daily_reports/add_report_provider.dart';
 import 'package:bizcopilot_flutter/provider/daily_reports/daily_reports_provider.dart';
 import 'package:bizcopilot_flutter/provider/daily_reports/home_widgets_provider.dart';
+import 'package:bizcopilot_flutter/provider/forecast/forecast_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,6 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
         context,
         listen: false,
       );
+      final forecastProvider = Provider.of<ForecastProvider>(
+        context,
+        listen: false,
+      );
       final dailyReportsProvider = Provider.of<DailyReportsProvider>(
         context,
         listen: false,
@@ -42,6 +47,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
       homeWidgetsProvider.getHomeWidgets();
       dailyReportsProvider.getDailyReports();
+      forecastProvider.getSaleForecast();
+      forecastProvider.getExpenseForecast();
 
       addReportProvider.addListener(() {
         final state = addReportProvider.resultState;
@@ -208,7 +215,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GradientCard(
                   title: "Sales",
                   iconUri: "assets/images/ic_arrow_up_circle_white_12.svg",
-                  forecast: "test forecast sales",
+                  forecast:
+                      context.watch<ForecastProvider>().saleForecastSummary,
                   amount: CurrencyUtils.formatCurrency("Rp", data[2].value),
                   colors: [
                     BizColors.colorGreen.getColor(context),
@@ -221,7 +229,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GradientCard(
                   title: "Expenses",
                   iconUri: "assets/images/ic_arrow_down_circle_white_12.svg",
-                  forecast: "test forecast expenses",
+                  forecast:
+                      context.watch<ForecastProvider>().expenseForecastSummary,
                   amount: CurrencyUtils.formatCurrency("Rp", data[1].value),
                   colors: [
                     BizColors.colorOrange.getColor(context),

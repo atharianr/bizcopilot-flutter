@@ -110,7 +110,11 @@ class ApiServices {
   Future<ForecastResponse> getSaleForecast(String lat, String long) {
     final uri = Uri.parse(Constant.baseUrl).replace(
       path: "/sale/forecast/",
-      queryParameters: {"lat": lat.toString(), "long": long.toString()},
+      queryParameters: {
+        "lat": lat.toString(),
+        "long": long.toString(),
+        "days_limit": "8",
+      },
     );
     final response = BaseNetwork.get<ForecastResponse>(
       url: uri,
@@ -123,7 +127,11 @@ class ApiServices {
   Future<ForecastResponse> getExpenseForecast(String lat, String long) {
     final uri = Uri.parse(Constant.baseUrl).replace(
       path: "/expense/forecast/",
-      queryParameters: {"lat": lat.toString(), "long": long.toString()},
+      queryParameters: {
+        "lat": lat.toString(),
+        "long": long.toString(),
+        "days_limit": "8",
+      },
     );
     final response = BaseNetwork.get<ForecastResponse>(
       url: uri,
