@@ -1,3 +1,6 @@
+import 'package:bizcopilot_flutter/data/model/chart_model.dart';
+import 'package:bizcopilot_flutter/data/model/chart_range_model.dart';
+import 'package:bizcopilot_flutter/provider/forecast/forecast_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
@@ -5,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../provider/daily_reports/home_widgets_provider.dart';
+import '../../static/state/sale_forecast_result_state.dart';
 import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
 import '../widget/forecast_gradient_card.dart';
@@ -29,7 +33,8 @@ class _ForecastScreenState extends State<ForecastScreen> {
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<HomeWidgetsProvider>(context, listen: false).getHomeWidgets();
+      // Provider.of<HomeWidgetsProvider>(context, listen: false).getHomeWidgets();
+      Provider.of<ForecastProvider>(context, listen: false).getSaleForecast();
     });
   }
 
@@ -77,7 +82,47 @@ class _ForecastScreenState extends State<ForecastScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            ForecastChart(tooltipBehavior: _tooltipBehavior),
+            // ForecastChart(tooltipBehavior: _tooltipBehavior),
+            Consumer<ForecastProvider>(
+              builder: (context, value, child) {
+                return switch (value.saleResultState) {
+                  SaleForecastLoadingState() => _buildLoading(),
+                  SaleForecastLoadedState(data: var data) => ForecastChart(
+                    tooltipBehavior: _tooltipBehavior,
+                    realData:
+                        data.monthlyData?.salesData
+                            ?.map(
+                              (e) =>
+                                  ChartModel(DateTime.parse(e.x!), e.y ?? 0.0),
+                            )
+                            .toList(),
+                    yData:
+                        data.monthlyData?.forecastData
+                            ?.map(
+                              (e) => ChartModel(
+                                DateTime.parse(e.x!),
+                                e.yhat ?? 0.0,
+                              ),
+                            )
+                            .toList(),
+                    yRangeData:
+                        data.monthlyData?.forecastData
+                            ?.map(
+                              (e) => ChartRangeModel(
+                                DateTime.parse(e.x!),
+                                e.yhatUpper ?? 0.0,
+                                e.yhatLower ?? 0.0,
+                              ),
+                            )
+                            .toList(),
+                  ),
+                  SaleForecastErrorState(error: var message) => _buildError(
+                    message,
+                  ),
+                  _ => const SizedBox(),
+                };
+              },
+            ),
             const SizedBox(height: 16),
             // Consumer<HomeWidgetsProvider>(
             //   builder: (context, value, child) {
@@ -153,57 +198,27 @@ class _ForecastScreenState extends State<ForecastScreen> {
 }
 
 class ForecastChart extends StatelessWidget {
-  const ForecastChart({super.key, required this.tooltipBehavior});
+  const ForecastChart({
+    super.key,
+    required this.tooltipBehavior,
+    this.realData = const [],
+    this.yData = const [],
+    this.yRangeData = const [],
+  });
 
   final TooltipBehavior tooltipBehavior;
+  final List<ChartModel>? realData;
+  final List<ChartModel>? yData;
+  final List<ChartRangeModel>? yRangeData;
 
   @override
   Widget build(BuildContext context) {
-    final List<ChartData> realData = [
-      ChartData(DateTime(2024, 7, 1), 1650000),
-      ChartData(DateTime(2024, 7, 4), 2400000),
-      ChartData(DateTime(2024, 7, 7), 1850000),
-      ChartData(DateTime(2024, 7, 10), 3100000),
-      ChartData(DateTime(2024, 7, 13), 2000000),
-      ChartData(DateTime(2024, 7, 16), 2800000),
-      ChartData(DateTime(2024, 7, 19), 1900000),
-      ChartData(DateTime(2024, 7, 22), 3250000),
-      ChartData(DateTime(2024, 7, 25), 2100000),
-      ChartData(DateTime(2024, 7, 28), 2950000),
-    ];
-
-    final List<ChartData> yData = [
-      ChartData(DateTime(2024, 7, 1), 1750000),
-      ChartData(DateTime(2024, 7, 4), 2500000),
-      ChartData(DateTime(2024, 7, 7), 1950000),
-      ChartData(DateTime(2024, 7, 10), 3200000),
-      ChartData(DateTime(2024, 7, 13), 2100000),
-      ChartData(DateTime(2024, 7, 16), 2900000),
-      ChartData(DateTime(2024, 7, 19), 2000000),
-      ChartData(DateTime(2024, 7, 22), 3350000),
-      ChartData(DateTime(2024, 7, 25), 2200000),
-      ChartData(DateTime(2024, 7, 28), 3050000),
-    ];
-
-    final List<RangeData> yRangeData = [
-      RangeData(DateTime(2024, 7, 1), 1500000, 2000000),
-      RangeData(DateTime(2024, 7, 4), 2200000, 2700000),
-      RangeData(DateTime(2024, 7, 7), 1700000, 2200000),
-      RangeData(DateTime(2024, 7, 10), 3000000, 3500000),
-      RangeData(DateTime(2024, 7, 13), 1900000, 2400000),
-      RangeData(DateTime(2024, 7, 16), 2700000, 3200000),
-      RangeData(DateTime(2024, 7, 19), 1800000, 2300000),
-      RangeData(DateTime(2024, 7, 22), 3100000, 3600000),
-      RangeData(DateTime(2024, 7, 25), 2000000, 2500000),
-      RangeData(DateTime(2024, 7, 28), 2800000, 3300000),
-    ];
-
     // Collect all Y values
     final allValues = [
-      ...realData.map((e) => e.value),
-      ...yData.map((e) => e.value),
-      ...yRangeData.map((e) => e.lower),
-      ...yRangeData.map((e) => e.upper),
+      ...?realData?.map((e) => e.value),
+      ...?yData?.map((e) => e.value),
+      ...?yRangeData?.map((e) => e.lower),
+      ...?yRangeData?.map((e) => e.upper),
     ];
 
     // Find min and max
@@ -260,12 +275,12 @@ class ForecastChart extends StatelessWidget {
           ),
           tooltipBehavior: tooltipBehavior,
           series: [
-            SplineRangeAreaSeries<RangeData, DateTime>(
+            SplineRangeAreaSeries<ChartRangeModel, DateTime>(
               name: 'Upper/Lower',
               dataSource: yRangeData,
-              xValueMapper: (RangeData data, _) => data.date,
-              highValueMapper: (RangeData data, _) => data.upper,
-              lowValueMapper: (RangeData data, _) => data.lower,
+              xValueMapper: (ChartRangeModel data, _) => data.date,
+              highValueMapper: (ChartRangeModel data, _) => data.upper,
+              lowValueMapper: (ChartRangeModel data, _) => data.lower,
               gradient: LinearGradient(
                 colors: [
                   BizColors.colorOrange.getColor(context).withOpacity(0.4),
@@ -275,19 +290,19 @@ class ForecastChart extends StatelessWidget {
                 end: Alignment.bottomCenter,
               ),
             ),
-            SplineSeries<ChartData, DateTime>(
+            SplineSeries<ChartModel, DateTime>(
               name: 'Y Data',
               dataSource: yData,
-              xValueMapper: (ChartData data, _) => data.date,
-              yValueMapper: (ChartData data, _) => data.value,
+              xValueMapper: (ChartModel data, _) => data.date,
+              yValueMapper: (ChartModel data, _) => data.value,
               color: BizColors.colorGreen.getColor(context),
               markerSettings: MarkerSettings(isVisible: true),
             ),
-            ScatterSeries<ChartData, DateTime>(
+            ScatterSeries<ChartModel, DateTime>(
               name: 'Real Data',
               dataSource: realData,
-              xValueMapper: (ChartData data, _) => data.date,
-              yValueMapper: (ChartData data, _) => data.value,
+              xValueMapper: (ChartModel data, _) => data.date,
+              yValueMapper: (ChartModel data, _) => data.value,
               color: BizColors.colorPrimary.getColor(context),
               markerSettings: MarkerSettings(isVisible: true),
             ),
@@ -296,19 +311,4 @@ class ForecastChart extends StatelessWidget {
       ),
     );
   }
-}
-
-class ChartData {
-  ChartData(this.date, this.value);
-
-  final DateTime date;
-  final double value;
-}
-
-class RangeData {
-  RangeData(this.date, this.lower, this.upper);
-
-  final DateTime date;
-  final double lower;
-  final double upper;
 }

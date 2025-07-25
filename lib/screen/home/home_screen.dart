@@ -24,39 +24,33 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late final AddReportProvider _addReportProvider;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final homeWidgetsProvider = Provider.of<HomeWidgetsProvider>(
-        context,
-        listen: false,
-      );
-      final forecastProvider = Provider.of<ForecastProvider>(
-        context,
-        listen: false,
-      );
-      final dailyReportsProvider = Provider.of<DailyReportsProvider>(
-        context,
-        listen: false,
-      );
-      final addReportProvider = Provider.of<AddReportProvider>(
-        context,
-        listen: false,
-      );
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final home = context.read<HomeWidgetsProvider>();
+      final daily = context.read<DailyReportsProvider>();
+      final forecast = context.read<ForecastProvider>();
 
-      homeWidgetsProvider.getHomeWidgets();
-      dailyReportsProvider.getDailyReports();
-      forecastProvider.getSaleForecast();
-      forecastProvider.getExpenseForecast();
+      // Critical first
+      await Future.wait([home.getHomeWidgets(), daily.getDailyReports()]);
 
-      addReportProvider.addListener(() {
-        final state = addReportProvider.resultState;
-        if (state is AddReportLoadedState) {
-          dailyReportsProvider.getDailyReports();
-        }
-      });
+      // Non-critical: do NOT await -> don't block UI
+      // ignore: unawaited_futures
+      forecast.getSaleForecast();
+      // ignore: unawaited_futures
+      forecast.getExpenseForecast();
+
+      _attachAddReportListener();
     });
+  }
+
+  @override
+  void dispose() {
+    _addReportProvider.removeListener(_onAddReportChanged);
+    super.dispose();
   }
 
   @override
@@ -304,5 +298,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  void _attachAddReportListener() {
+    _addReportProvider = context.read<AddReportProvider>();
+    _addReportProvider.addListener(_onAddReportChanged);
+  }
+
+  void _onAddReportChanged() {
+    final state = _addReportProvider.resultState;
+    if (state is AddReportLoadedState) {
+      context.read<DailyReportsProvider>().getDailyReports();
+    }
   }
 }

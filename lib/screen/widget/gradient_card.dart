@@ -89,6 +89,7 @@ class GradientCard extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(
+              top: 4.0,
               bottom: 2.0,
               left: 12.0,
               right: 12.0,
