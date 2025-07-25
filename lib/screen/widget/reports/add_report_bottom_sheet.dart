@@ -17,9 +17,10 @@ import '../biz_text_input.dart';
 import '../shimmer_card.dart';
 
 class AddReportBottomSheet extends StatefulWidget {
+  final int? reportId;
   final bool isUpdate;
 
-  const AddReportBottomSheet({super.key, this.isUpdate = false});
+  const AddReportBottomSheet({super.key, this.reportId, this.isUpdate = false});
 
   @override
   State<AddReportBottomSheet> createState() => _AddReportBottomSheetState();
@@ -40,11 +41,11 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
             ? provider.addReportModel ?? AddReportModel()
             : AddReportModel();
 
-    provider.resetErrors();
-
-    if (!widget.isUpdate) provider.resetReportModel();
+    model.isUpdate = widget.isUpdate;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      provider.resetErrors();
+      if (!widget.isUpdate) provider.resetReportModel();
       context.read<ListProductProvider>().getAllListProducts();
     });
 
@@ -115,7 +116,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
             ),
             Center(
               child: Text(
-                model.date != null ? "Update Report" : "Add New Report",
+                model.isUpdate ? "Update Report" : "Add New Report",
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -169,13 +170,19 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                     hintText: "Product",
                     items: productList,
                     onChanged: (value) {
+                      final selectedProduct = productList.firstWhere(
+                        (product) => product.id == value,
+                        orElse: () => Products(),
+                      );
+
                       provider.setReportModel = AddReportModel(
-                        name: value?.name,
+                        name: selectedProduct.name,
                         description: model.description,
                         price: model.price,
-                        product: value,
+                        product: selectedProduct,
                         date: model.date,
                         type: ReportType.sales,
+                        isUpdate: model.isUpdate,
                       );
                     },
                     errorText: provider.productError,
@@ -200,6 +207,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                     product: model.product,
                     date: model.date,
                     type: model.type,
+                    isUpdate: model.isUpdate,
                   );
                 },
               ),
@@ -226,6 +234,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                     product: model.product,
                     date: model.date,
                     type: model.type,
+                    isUpdate: model.isUpdate,
                   );
                 },
               ),
@@ -252,6 +261,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                     product: model.product,
                     date: model.date,
                     type: model.type,
+                    isUpdate: model.isUpdate,
                   );
                 },
               ),
@@ -306,6 +316,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                     product: model.product,
                     date: formattedDate,
                     type: model.type,
+                    isUpdate: model.isUpdate,
                   );
                 }
               },
@@ -322,7 +333,11 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                         ? null
                         : () async {
                           if (provider.validateInputs()) {
-                            await provider.addReport();
+                            if (model.isUpdate) {
+                              await provider.updateReport(widget.reportId);
+                            } else {
+                              await provider.addReport();
+                            }
                             if (context.mounted) {
                               Navigator.pop(context);
                             }
@@ -339,7 +354,7 @@ class _AddReportBottomSheetState extends State<AddReportBottomSheet> {
                           ),
                         )
                         : Text(
-                          model.date != null ? "Update Report" : "Add Report",
+                          model.isUpdate ? "Update Report" : "Add Report",
                           style: BizTextStyles.button.copyWith(
                             color: BizColors.colorWhite.getColor(context),
                           ),

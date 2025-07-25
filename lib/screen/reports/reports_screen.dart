@@ -3,15 +3,46 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../provider/daily_reports/add_report_provider.dart';
 import '../../provider/daily_reports/daily_reports_provider.dart';
-import '../../static/state/daily_reports_result_state.dart';
+import '../../static/state/add_report_result_state.dart';
+import '../../static/state/monthly_reports_result_state.dart';
 import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
 import '../widget/reports/reports_card.dart';
 import '../widget/shimmer_card.dart';
 
-class ReportsScreen extends StatelessWidget {
+class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
+
+  @override
+  State<ReportsScreen> createState() => _ReportsScreenState();
+}
+
+class _ReportsScreenState extends State<ReportsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final dailyReportsProvider = Provider.of<DailyReportsProvider>(
+        context,
+        listen: false,
+      );
+      final addReportProvider = Provider.of<AddReportProvider>(
+        context,
+        listen: false,
+      );
+
+      dailyReportsProvider.getMonthlyReports();
+
+      addReportProvider.addListener(() {
+        final state = addReportProvider.resultState;
+        if (state is AddReportLoadedState) {
+          dailyReportsProvider.getMonthlyReports();
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +53,18 @@ class ReportsScreen extends StatelessWidget {
           await Provider.of<DailyReportsProvider>(
             context,
             listen: false,
-          ).getDailyReports();
+          ).getMonthlyReports();
         },
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.only(
+                top: 24 + MediaQuery.of(context).padding.top,
+                bottom: 24,
+                left: 24,
+                right: 24,
+              ),
               sliver: SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,19 +90,19 @@ class ReportsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               sliver: Consumer<DailyReportsProvider>(
                 builder: (context, value, child) {
-                  return switch (value.resultState) {
-                    DailyReportsLoadingState() => SliverToBoxAdapter(
+                  return switch (value.monthlyReportsResultState) {
+                    MonthlyReportsLoadingState() => SliverToBoxAdapter(
                       child: _buildLoading(),
                     ),
-                    DailyReportsLoadedState(monthlyData: final data)
+                    MonthlyReportsLoadedState(reports: final data)
                         when data.isEmpty =>
                       SliverFillRemaining(
                         hasScrollBody: false,
                         child: _buildEmptyState(),
                       ),
-                    DailyReportsLoadedState(monthlyData: final data) =>
+                    MonthlyReportsLoadedState(reports: final data) =>
                       _buildGroupedReports(data),
-                    DailyReportsErrorState(error: final message) =>
+                    MonthlyReportsErrorState(error: final message) =>
                       SliverToBoxAdapter(child: _buildError(message)),
                     _ => const SliverToBoxAdapter(child: SizedBox()),
                   };

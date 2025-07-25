@@ -13,8 +13,7 @@ class DailyReportsErrorState extends DailyReportsResultState {
 }
 
 class DailyReportsLoadedState extends DailyReportsResultState {
-  final List<Reports> dailyData;
-  final List<Reports> monthlyData;
+  final List<Reports> reports;
 
-  DailyReportsLoadedState(this.dailyData, this.monthlyData);
+  DailyReportsLoadedState(this.reports);
 }

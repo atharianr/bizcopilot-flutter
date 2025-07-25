@@ -2,18 +2,19 @@ import 'package:bizcopilot_flutter/constant/constant.dart';
 import 'package:bizcopilot_flutter/data/model/request/add_expense_report_request.dart';
 import 'package:bizcopilot_flutter/data/model/request/add_sale_report_request.dart';
 import 'package:bizcopilot_flutter/data/model/request/example_request.dart';
+import 'package:bizcopilot_flutter/data/model/request/product_request_model.dart';
 import 'package:bizcopilot_flutter/data/model/response/add_report_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/daily_reports_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/example_response.dart';
+import 'package:bizcopilot_flutter/data/model/response/forecast_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/home_widgets_response.dart';
 import 'package:bizcopilot_flutter/data/model/response/product_response.dart';
-import 'package:bizcopilot_flutter/data/model/request/product_request_model.dart';
 
 import 'utils/base_network.dart';
 
 class ApiServices {
   Future<HomeWidgetsResponse> getHomeWidgets() {
-    final uri = Uri.parse("${Constant.baseUrl}/home");
+    final uri = Uri.parse("${Constant.baseUrl}/home/");
 
     return BaseNetwork.get<HomeWidgetsResponse>(
       url: uri,
@@ -22,8 +23,10 @@ class ApiServices {
     );
   }
 
-  Future<MonthlyReportsResponse> getDailyReports() {
-    final uri = Uri.parse("${Constant.baseUrl}/report/monthly");
+  Future<MonthlyReportsResponse> getDailyReports([int days = 1]) {
+    final uri = Uri.parse(
+      Constant.baseUrl,
+    ).replace(path: "/report/all/", queryParameters: {"days": days.toString()});
 
     return BaseNetwork.get<MonthlyReportsResponse>(
       url: uri,
@@ -33,8 +36,35 @@ class ApiServices {
   }
 
   Future<AddReportResponse> addSaleReport(AddSaleReportRequest request) {
-    final uri = Uri.parse("${Constant.baseUrl}/sale");
+    final uri = Uri.parse("${Constant.baseUrl}/sale/");
     final response = BaseNetwork.post<AddReportResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      body: request.toJson(),
+      parser: (json) => AddReportResponse.fromJson(json),
+      successCode: 200,
+    );
+    return response;
+  }
+
+  Future<AddReportResponse> addExpenseReport(AddExpenseReportRequest request) {
+    final uri = Uri.parse("${Constant.baseUrl}/expense/");
+    final response = BaseNetwork.post<AddReportResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      body: request.toJson(),
+      parser: (json) => AddReportResponse.fromJson(json),
+      successCode: 200,
+    );
+    return response;
+  }
+
+  Future<AddReportResponse> updateSaleReport(
+    AddSaleReportRequest request,
+    int? reportId,
+  ) {
+    final uri = Uri.parse("${Constant.baseUrl}/sale/$reportId");
+    final response = BaseNetwork.put<AddReportResponse>(
       url: uri,
       headers: {"Content-Type": "application/json"},
       body: request.toJson(),
@@ -43,13 +73,70 @@ class ApiServices {
     return response;
   }
 
-  Future<AddReportResponse> addExpenseReport(AddExpenseReportRequest request) {
-    final uri = Uri.parse("${Constant.baseUrl}/expense");
-    final response = BaseNetwork.post<AddReportResponse>(
+  Future<AddReportResponse> updateExpenseReport(
+    AddExpenseReportRequest request,
+    int? reportId,
+  ) {
+    final uri = Uri.parse("${Constant.baseUrl}/expense/$reportId");
+    final response = BaseNetwork.put<AddReportResponse>(
       url: uri,
       headers: {"Content-Type": "application/json"},
       body: request.toJson(),
       parser: (json) => AddReportResponse.fromJson(json),
+    );
+    return response;
+  }
+
+  Future<AddReportResponse> deleteSaleReport(int? reportId) {
+    final uri = Uri.parse("${Constant.baseUrl}/sale/$reportId");
+    final response = BaseNetwork.delete<AddReportResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      parser: (json) => AddReportResponse.fromJson(json),
+    );
+    return response;
+  }
+
+  Future<AddReportResponse> deleteExpenseReport(int? reportId) {
+    final uri = Uri.parse("${Constant.baseUrl}/expense/$reportId");
+    final response = BaseNetwork.delete<AddReportResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      parser: (json) => AddReportResponse.fromJson(json),
+    );
+    return response;
+  }
+
+  Future<ForecastResponse> getSaleForecast(String lat, String long) {
+    final uri = Uri.parse(Constant.baseUrl).replace(
+      path: "/sale/forecast/",
+      queryParameters: {
+        "lat": lat.toString(),
+        "long": long.toString(),
+        "days_limit": "8",
+      },
+    );
+    final response = BaseNetwork.get<ForecastResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      parser: (json) => ForecastResponse.fromJson(json),
+    );
+    return response;
+  }
+
+  Future<ForecastResponse> getExpenseForecast(String lat, String long) {
+    final uri = Uri.parse(Constant.baseUrl).replace(
+      path: "/expense/forecast/",
+      queryParameters: {
+        "lat": lat.toString(),
+        "long": long.toString(),
+        "days_limit": "8",
+      },
+    );
+    final response = BaseNetwork.get<ForecastResponse>(
+      url: uri,
+      headers: {"Content-Type": "application/json"},
+      parser: (json) => ForecastResponse.fromJson(json),
     );
     return response;
   }

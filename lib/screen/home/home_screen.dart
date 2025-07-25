@@ -1,8 +1,11 @@
+import 'package:bizcopilot_flutter/provider/daily_reports/add_report_provider.dart';
 import 'package:bizcopilot_flutter/provider/daily_reports/daily_reports_provider.dart';
 import 'package:bizcopilot_flutter/provider/daily_reports/home_widgets_provider.dart';
+import 'package:bizcopilot_flutter/provider/forecast/forecast_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../static/state/add_report_result_state.dart';
 import '../../static/state/daily_reports_result_state.dart';
 import '../../static/state/home_widgets_result_state.dart';
 import '../../style/color/biz_colors.dart';
@@ -25,11 +28,34 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<HomeWidgetsProvider>(context, listen: false).getHomeWidgets();
-      Provider.of<DailyReportsProvider>(
+      final homeWidgetsProvider = Provider.of<HomeWidgetsProvider>(
         context,
         listen: false,
-      ).getDailyReports();
+      );
+      final forecastProvider = Provider.of<ForecastProvider>(
+        context,
+        listen: false,
+      );
+      final dailyReportsProvider = Provider.of<DailyReportsProvider>(
+        context,
+        listen: false,
+      );
+      final addReportProvider = Provider.of<AddReportProvider>(
+        context,
+        listen: false,
+      );
+
+      homeWidgetsProvider.getHomeWidgets();
+      dailyReportsProvider.getDailyReports();
+      forecastProvider.getSaleForecast();
+      forecastProvider.getExpenseForecast();
+
+      addReportProvider.addListener(() {
+        final state = addReportProvider.resultState;
+        if (state is AddReportLoadedState) {
+          dailyReportsProvider.getDailyReports();
+        }
+      });
     });
   }
 
@@ -53,8 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
-            SliverToBoxAdapter(child: _buildGreetingSection(context)),
+            SliverPadding(
+              padding: EdgeInsets.only(
+                top: 24 + MediaQuery.of(context).padding.top,
+              ),
+              sliver: SliverToBoxAdapter(child: _buildGreetingSection(context)),
+            ),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
             SliverToBoxAdapter(
               child: Consumer<HomeWidgetsProvider>(
@@ -80,14 +110,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 return switch (value.resultState) {
                   DailyReportsLoadingState() => _buildDailyLoading(),
 
-                  DailyReportsLoadedState(dailyData: final data)
+                  DailyReportsLoadedState(reports: final data)
                       when data.isEmpty =>
                     SliverFillRemaining(
                       hasScrollBody: false,
                       child: _buildNoReportsAvailable(),
                     ),
 
-                  DailyReportsLoadedState(dailyData: final data) => SliverList(
+                  DailyReportsLoadedState(reports: final data) => SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final item = data[index];
                       return Padding(
@@ -107,6 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 };
               },
             ),
+            SliverToBoxAdapter(child: SizedBox(height: 16)),
           ],
         ),
       ),
@@ -184,7 +215,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GradientCard(
                   title: "Sales",
                   iconUri: "assets/images/ic_arrow_up_circle_white_12.svg",
-                  forecast: "test forecast sales",
+                  forecast:
+                      context.watch<ForecastProvider>().saleForecastSummary,
                   amount: CurrencyUtils.formatCurrency("Rp", data[2].value),
                   colors: [
                     BizColors.colorGreen.getColor(context),
@@ -197,7 +229,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GradientCard(
                   title: "Expenses",
                   iconUri: "assets/images/ic_arrow_down_circle_white_12.svg",
-                  forecast: "test forecast expenses",
+                  forecast:
+                      context.watch<ForecastProvider>().expenseForecastSummary,
                   amount: CurrencyUtils.formatCurrency("Rp", data[1].value),
                   colors: [
                     BizColors.colorOrange.getColor(context),

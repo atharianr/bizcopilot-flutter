@@ -42,7 +42,9 @@ class ReportsCard extends StatelessWidget {
           context: context,
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
-          builder: (context) => const AddReportBottomSheet(isUpdate: true),
+          builder:
+              (context) =>
+                  AddReportBottomSheet(reportId: reportData.id, isUpdate: true),
         );
       },
       child: Padding(

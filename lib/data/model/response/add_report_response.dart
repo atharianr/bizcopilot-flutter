@@ -3,49 +3,105 @@ class AddReportResponse {
 
   AddReportResponse({this.data});
 
-  factory AddReportResponse.fromJson(Map<String, dynamic> json) =>
-      AddReportResponse(
-        data: json["data"] != null ? Data.fromJson(json["data"]) : null,
-      );
+  AddReportResponse.fromJson(Map<String, dynamic> json) {
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
+  }
 
-  Map<String, dynamic> toJson() => {"data": data?.toJson()};
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (this.data != null) {
+      data['data'] = this.data!.toJson();
+    }
+    return data;
+  }
 }
 
 class Data {
-  CreateSale? createSale;
+  GetSalesReport? getSalesReport;
 
-  Data({this.createSale});
+  Data({this.getSalesReport});
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-    createSale:
-        json["createSale"] != null
-            ? CreateSale.fromJson(json["createSale"])
-            : null,
-  );
+  Data.fromJson(Map<String, dynamic> json) {
+    getSalesReport =
+        json['getSalesReport'] != null
+            ? GetSalesReport.fromJson(json['getSalesReport'])
+            : null;
+  }
 
-  Map<String, dynamic> toJson() => {"createSale": createSale?.toJson()};
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (getSalesReport != null) {
+      data['getSalesReport'] = getSalesReport!.toJson();
+    }
+    return data;
+  }
 }
 
-class CreateSale {
-  Sale? sale;
+class GetSalesReport {
+  List<SalesReport>? salesReport;
 
-  CreateSale({this.sale});
+  GetSalesReport({this.salesReport});
 
-  factory CreateSale.fromJson(Map<String, dynamic> json) => CreateSale(
-    sale: json["sale"] != null ? Sale.fromJson(json["sale"]) : null,
-  );
+  GetSalesReport.fromJson(Map<String, dynamic> json) {
+    if (json['salesReport'] != null) {
+      salesReport = <SalesReport>[];
+      json['salesReport'].forEach((v) {
+        salesReport!.add(SalesReport.fromJson(v));
+      });
+    }
+  }
 
-  Map<String, dynamic> toJson() => {"sale": sale?.toJson()};
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (salesReport != null) {
+      data['salesReport'] = salesReport!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
 }
 
-class Sale {
-  int? saleId;
-  String? message;
+class SalesReport {
+  int? id;
+  String? saleDate;
+  String? productName;
+  int? productId;
+  String? productDescription;
+  int? productUnitPrice;
+  int? quantity;
+  int? totalSaleAmount;
 
-  Sale({this.saleId, this.message});
+  SalesReport({
+    this.id,
+    this.saleDate,
+    this.productName,
+    this.productId,
+    this.productDescription,
+    this.productUnitPrice,
+    this.quantity,
+    this.totalSaleAmount,
+  });
 
-  factory Sale.fromJson(Map<String, dynamic> json) =>
-      Sale(saleId: json["sale_id"], message: json["message"]);
+  SalesReport.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    saleDate = json['sale_date'];
+    productName = json['product_name'];
+    productId = json['product_id'];
+    productDescription = json['product_description'];
+    productUnitPrice = json['product_unit_price'];
+    quantity = json['quantity'];
+    totalSaleAmount = json['total_sale_amount'];
+  }
 
-  Map<String, dynamic> toJson() => {"sale_id": saleId, "message": message};
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['sale_date'] = saleDate;
+    data['product_name'] = productName;
+    data['product_id'] = productId;
+    data['product_description'] = productDescription;
+    data['product_unit_price'] = productUnitPrice;
+    data['quantity'] = quantity;
+    data['total_sale_amount'] = totalSaleAmount;
+    return data;
+  }
 }
