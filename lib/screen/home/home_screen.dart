@@ -297,9 +297,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildError(String message) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Text(
-        message,
-        style: TextStyle(color: BizColors.colorText.getColor(context)),
+      child: Center(
+        child: Text(
+          message,
+          style: TextStyle(color: BizColors.colorText.getColor(context)),
+        ),
       ),
     );
   }
