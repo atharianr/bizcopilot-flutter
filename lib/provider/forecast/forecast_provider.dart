@@ -2,7 +2,7 @@ import 'package:bizcopilot_flutter/utils/extension_utils.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../data/api/api_service.dart';
-import '../../screen/forecast/forecast_screen.dart';
+import '../../data/model/response/forecast_response.dart';
 import '../../static/state/expense_forecast_result_state.dart';
 import '../../static/state/sale_forecast_result_state.dart';
 
@@ -16,52 +16,63 @@ class ForecastProvider extends ChangeNotifier {
 
   SaleForecastResultState get saleResultState => _saleResultState;
 
-  String _saleForecastSummary = "";
-
-  String get saleForecastSummary => _saleForecastSummary;
-
   // Expense Forecast State
   ExpenseForecastResultState _expenseResultState = ExpenseForecastNoneState();
 
   ExpenseForecastResultState get expenseResultState => _expenseResultState;
 
-  String _expenseForecastSummary = "";
+  // Common helper for building summary text
+  String _buildFullSummary(AnalysisResult? analysis) {
+    final summary = analysis?.summary ?? '';
+    final recommendations = (analysis?.recommendations ?? [])
+        .map((e) => '• $e')
+        .join('\n');
+    final narrative = analysis?.narrative ?? '';
 
-  String get expenseForecastSummary => _expenseForecastSummary;
+    return '''
+$summary
+
+Recommendations:
+$recommendations
+
+$narrative
+'''.trim();
+  }
 
   // Fetch Sale Forecast
   Future<void> getSaleForecast() async {
-    try {
-      _saleResultState = SaleForecastLoadingState();
-      notifyListeners();
+    _saleResultState = SaleForecastLoadingState();
+    notifyListeners();
 
+    try {
       final result = await _apiServices.getSaleForecast("-6.2088", "106.8456");
-      _saleResultState = SaleForecastLoadedState(result);
-      _saleForecastSummary = result.monthlyData?.analysisResult?.summary ?? "";
-      notifyListeners();
+      final fullSummary = _buildFullSummary(result.monthlyData?.analysisResult);
+
+      _saleResultState = SaleForecastLoadedState(result, fullSummary);
     } catch (e) {
       _saleResultState = SaleForecastErrorState(e.getMessage());
-      notifyListeners();
     }
+
+    notifyListeners();
   }
 
   // Fetch Expense Forecast
   Future<void> getExpenseForecast() async {
-    try {
-      _expenseResultState = ExpenseForecastLoadingState();
-      notifyListeners();
+    _expenseResultState = ExpenseForecastLoadingState();
+    notifyListeners();
 
+    try {
       final result = await _apiServices.getExpenseForecast(
         "-6.2088",
         "106.8456",
       );
-      _expenseResultState = ExpenseForecastLoadedState(result);
-      _expenseForecastSummary =
-          result.monthlyData?.analysisResult?.summary ?? "";
-      notifyListeners();
+      final fullSummary = _buildFullSummary(result.monthlyData?.analysisResult);
+
+      _expenseResultState = ExpenseForecastLoadedState(result, fullSummary);
     } catch (e) {
       _expenseResultState = ExpenseForecastErrorState(e.getMessage());
-      notifyListeners();
     }
+
+    notifyListeners();
   }
 }

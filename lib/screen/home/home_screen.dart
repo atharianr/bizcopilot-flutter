@@ -2,6 +2,7 @@ import 'package:bizcopilot_flutter/provider/daily_reports/add_report_provider.da
 import 'package:bizcopilot_flutter/provider/daily_reports/daily_reports_provider.dart';
 import 'package:bizcopilot_flutter/provider/daily_reports/home_widgets_provider.dart';
 import 'package:bizcopilot_flutter/provider/forecast/forecast_provider.dart';
+import 'package:bizcopilot_flutter/static/state/sale_forecast_result_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -34,13 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
       final daily = context.read<DailyReportsProvider>();
       final forecast = context.read<ForecastProvider>();
 
-      // Critical first
       await Future.wait([home.getHomeWidgets(), daily.getDailyReports()]);
 
-      // Non-critical: do NOT await -> don't block UI
-      // ignore: unawaited_futures
       forecast.getSaleForecast();
-      // ignore: unawaited_futures
       forecast.getExpenseForecast();
 
       _attachAddReportListener();
@@ -187,6 +184,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHomeLoaded(List<dynamic> data) {
+    final saleResultState = context.watch<ForecastProvider>().saleResultState;
+    final saleSummary =
+        saleResultState is SaleForecastLoadedState
+            ? saleResultState.summary
+            : '-';
+
+    final expenseResultState =
+        context.watch<ForecastProvider>().saleResultState;
+    final expenseSummary =
+        expenseResultState is SaleForecastLoadedState
+            ? expenseResultState.summary
+            : '-';
+
     return Column(
       children: [
         Padding(
@@ -204,13 +214,13 @@ class _HomeScreenState extends State<HomeScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: GradientCard(
                   title: "Sales",
                   iconUri: "assets/images/ic_arrow_up_circle_white_12.svg",
-                  forecast:
-                      context.watch<ForecastProvider>().saleForecastSummary,
+                  forecast: saleSummary,
                   amount: CurrencyUtils.formatCurrency("Rp", data[2].value),
                   colors: [
                     BizColors.colorGreen.getColor(context),
@@ -223,8 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GradientCard(
                   title: "Expenses",
                   iconUri: "assets/images/ic_arrow_down_circle_white_12.svg",
-                  forecast:
-                      context.watch<ForecastProvider>().expenseForecastSummary,
+                  forecast: expenseSummary,
                   amount: CurrencyUtils.formatCurrency("Rp", data[1].value),
                   colors: [
                     BizColors.colorOrange.getColor(context),

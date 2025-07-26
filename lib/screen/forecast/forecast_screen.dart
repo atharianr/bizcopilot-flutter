@@ -1,16 +1,16 @@
-import 'package:bizcopilot_flutter/data/model/chart_model.dart';
-import 'package:bizcopilot_flutter/data/model/chart_range_model.dart';
 import 'package:bizcopilot_flutter/provider/forecast/forecast_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import '../../data/model/response/forecast_response.dart';
 import '../../provider/daily_reports/home_widgets_provider.dart';
+import '../../static/state/expense_forecast_result_state.dart';
 import '../../static/state/sale_forecast_result_state.dart';
 import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
+import '../widget/forecast_chart.dart';
 import '../widget/forecast_gradient_card.dart';
 import '../widget/shimmer_card.dart';
 
@@ -33,13 +33,29 @@ class _ForecastScreenState extends State<ForecastScreen> {
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Provider.of<HomeWidgetsProvider>(context, listen: false).getHomeWidgets();
       Provider.of<ForecastProvider>(context, listen: false).getSaleForecast();
+      Provider.of<ForecastProvider>(
+        context,
+        listen: false,
+      ).getExpenseForecast();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final saleResultState = context.watch<ForecastProvider>().saleResultState;
+    final saleForecastData =
+        saleResultState is SaleForecastLoadedState
+            ? saleResultState.data.monthlyData?.forecastData
+            : <ForecastData>[];
+
+    final expenseResultState =
+        context.watch<ForecastProvider>().expenseResultState;
+    final expenseForecastData =
+        expenseResultState is ExpenseForecastLoadedState
+            ? expenseResultState.data.monthlyData?.forecastData
+            : <ForecastData>[];
+
     return Scaffold(
       backgroundColor: BizColors.colorBackground.getColor(context),
       body: RefreshIndicator(
@@ -50,7 +66,12 @@ class _ForecastScreenState extends State<ForecastScreen> {
           ).getHomeWidgets();
         },
         child: ListView(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.only(
+            left: 24.0,
+            right: 24.0,
+            top: 24.0 + MediaQuery.of(context).padding.top,
+            bottom: 24.0,
+          ),
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
             Text(
@@ -82,60 +103,54 @@ class _ForecastScreenState extends State<ForecastScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            // ForecastChart(tooltipBehavior: _tooltipBehavior),
+            ForecastChart(
+              tooltipBehavior: _tooltipBehavior,
+              saleForecast: saleForecastData,
+              expenseForecast: expenseForecastData,
+            ),
+            const SizedBox(height: 16),
             Consumer<ForecastProvider>(
               builder: (context, value, child) {
-                return switch (value.saleResultState) {
-                  SaleForecastLoadingState() => _buildLoading(),
-                  SaleForecastLoadedState(data: var data) => ForecastChart(
-                    tooltipBehavior: _tooltipBehavior,
-                    realData:
-                        data.monthlyData?.salesData
-                            ?.map(
-                              (e) =>
-                                  ChartModel(DateTime.parse(e.x!), e.y ?? 0.0),
-                            )
-                            .toList(),
-                    yData:
-                        data.monthlyData?.forecastData
-                            ?.map(
-                              (e) => ChartModel(
-                                DateTime.parse(e.x!),
-                                e.yhat ?? 0.0,
-                              ),
-                            )
-                            .toList(),
-                    yRangeData:
-                        data.monthlyData?.forecastData
-                            ?.map(
-                              (e) => ChartRangeModel(
-                                DateTime.parse(e.x!),
-                                e.yhatUpper ?? 0.0,
-                                e.yhatLower ?? 0.0,
-                              ),
-                            )
-                            .toList(),
-                  ),
-                  SaleForecastErrorState(error: var message) => _buildError(
+                switch (value.saleResultState) {
+                  case SaleForecastLoadingState():
+                    return _buildLoading();
+                  case SaleForecastLoadedState(summary: var summary):
+                    return ForecastGradientCard(
+                      colors: [
+                        BizColors.colorGreen.getColor(context),
+                        BizColors.colorGreenDark.getColor(context),
+                      ],
+                      title: "Sales Forecast Summary",
+                      content: summary,
+                    );
+                  case SaleForecastErrorState(error: var message):
+                    return _buildError(message);
+                  default:
+                    return const SizedBox();
+                }
+              },
+            ),
+            const SizedBox(height: 16),
+            Consumer<ForecastProvider>(
+              builder: (context, value, child) {
+                return switch (value.expenseResultState) {
+                  ExpenseForecastLoadingState() => _buildLoading(),
+                  ExpenseForecastLoadedState(summary: var summary) =>
+                    ForecastGradientCard(
+                      colors: [
+                        BizColors.colorOrange.getColor(context),
+                        BizColors.colorOrangeDark.getColor(context),
+                      ],
+                      title: "Expense Forecast Summary",
+                      content: summary,
+                    ),
+                  ExpenseForecastErrorState(error: var message) => _buildError(
                     message,
                   ),
                   _ => const SizedBox(),
                 };
               },
             ),
-            const SizedBox(height: 16),
-            // Consumer<HomeWidgetsProvider>(
-            //   builder: (context, value, child) {
-            //     return switch (value.resultState) {
-            //       HomeWidgetsLoadingState() => _buildLoading(),
-            //       HomeWidgetsLoadedState(data: var data) => _buildLoaded(data),
-            //       HomeWidgetsErrorState(error: var message) => _buildError(
-            //         message,
-            //       ),
-            //       _ => const SizedBox(),
-            //     };
-            //   },
-            // ),
           ],
         ),
       ),
@@ -192,122 +207,6 @@ class _ForecastScreenState extends State<ForecastScreen> {
       child: Text(
         message,
         style: TextStyle(color: BizColors.colorText.getColor(context)),
-      ),
-    );
-  }
-}
-
-class ForecastChart extends StatelessWidget {
-  const ForecastChart({
-    super.key,
-    required this.tooltipBehavior,
-    this.realData = const [],
-    this.yData = const [],
-    this.yRangeData = const [],
-  });
-
-  final TooltipBehavior tooltipBehavior;
-  final List<ChartModel>? realData;
-  final List<ChartModel>? yData;
-  final List<ChartRangeModel>? yRangeData;
-
-  @override
-  Widget build(BuildContext context) {
-    // Collect all Y values
-    final allValues = [
-      ...?realData?.map((e) => e.value),
-      ...?yData?.map((e) => e.value),
-      ...?yRangeData?.map((e) => e.lower),
-      ...?yRangeData?.map((e) => e.upper),
-    ];
-
-    // Find min and max
-    final minValue = allValues.reduce((a, b) => a < b ? a : b);
-    final maxValue = allValues.reduce((a, b) => a > b ? a : b);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: BizColors.colorBackground.getColor(context),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            offset: const Offset(0, 0),
-            blurRadius: 4,
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SfCartesianChart(
-          plotAreaBorderWidth: 0,
-          primaryXAxis: DateTimeAxis(
-            majorGridLines: MajorGridLines(width: 0),
-            axisLine: AxisLine(width: 0.5),
-            dateFormat: DateFormat('d MMM'),
-            intervalType: DateTimeIntervalType.days,
-            interval: 2,
-            labelStyle: TextStyle(color: BizColors.colorText.getColor(context)),
-          ),
-          primaryYAxis: NumericAxis(
-            minimum: minValue,
-            maximum: maxValue,
-            interval: 250000,
-            majorGridLines: MajorGridLines(width: 0.5),
-            axisLine: AxisLine(width: 0),
-            labelStyle: TextStyle(color: BizColors.colorText.getColor(context)),
-            axisLabelFormatter: (AxisLabelRenderDetails details) {
-              final num value = details.value;
-              final String text = '${(value / 1000).toStringAsFixed(0)}K';
-              return ChartAxisLabel(text, details.textStyle);
-            },
-          ),
-          title: ChartTitle(
-            text: 'Spot the Trends, Stay Ahead',
-            textStyle: BizTextStyles.bodyLargeExtraBold.copyWith(
-              color: BizColors.colorText.getColor(context),
-            ),
-          ),
-          legend: Legend(
-            isVisible: true,
-            textStyle: TextStyle(color: BizColors.colorText.getColor(context)),
-          ),
-          tooltipBehavior: tooltipBehavior,
-          series: [
-            SplineRangeAreaSeries<ChartRangeModel, DateTime>(
-              name: 'Upper/Lower',
-              dataSource: yRangeData,
-              xValueMapper: (ChartRangeModel data, _) => data.date,
-              highValueMapper: (ChartRangeModel data, _) => data.upper,
-              lowValueMapper: (ChartRangeModel data, _) => data.lower,
-              gradient: LinearGradient(
-                colors: [
-                  BizColors.colorOrange.getColor(context).withOpacity(0.4),
-                  BizColors.colorOrangeDark.getColor(context).withOpacity(0.2),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-            SplineSeries<ChartModel, DateTime>(
-              name: 'Y Data',
-              dataSource: yData,
-              xValueMapper: (ChartModel data, _) => data.date,
-              yValueMapper: (ChartModel data, _) => data.value,
-              color: BizColors.colorGreen.getColor(context),
-              markerSettings: MarkerSettings(isVisible: true),
-            ),
-            ScatterSeries<ChartModel, DateTime>(
-              name: 'Real Data',
-              dataSource: realData,
-              xValueMapper: (ChartModel data, _) => data.date,
-              yValueMapper: (ChartModel data, _) => data.value,
-              color: BizColors.colorPrimary.getColor(context),
-              markerSettings: MarkerSettings(isVisible: true),
-            ),
-          ],
-        ),
       ),
     );
   }

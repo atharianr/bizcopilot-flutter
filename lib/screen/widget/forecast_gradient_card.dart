@@ -80,7 +80,6 @@ class ForecastGradientCard extends StatelessWidget {
                         style: BizTextStyles.bodyLargeRegularBold.copyWith(
                           color: BizColors.colorWhite.getColor(context),
                         ),
-                        maxLines: 3,
                       ),
                     ),
                   ),

@@ -14,6 +14,7 @@ class SaleForecastErrorState extends SaleForecastResultState {
 
 class SaleForecastLoadedState extends SaleForecastResultState {
   final ForecastResponse data;
+  final String summary;
 
-  SaleForecastLoadedState(this.data);
+  SaleForecastLoadedState(this.data, this.summary);
 }

@@ -14,6 +14,7 @@ class ExpenseForecastErrorState extends ExpenseForecastResultState {
 
 class ExpenseForecastLoadedState extends ExpenseForecastResultState {
   final ForecastResponse data;
+  final String summary;
 
-  ExpenseForecastLoadedState(this.data);
+  ExpenseForecastLoadedState(this.data, this.summary);
 }
