@@ -185,14 +185,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final saleSummary =
         saleResultState is SaleForecastLoadedState
             ? saleResultState.summary
-            : '-';
+            : '';
 
     final expenseResultState =
         context.watch<ForecastProvider>().saleResultState;
     final expenseSummary =
         expenseResultState is SaleForecastLoadedState
             ? expenseResultState.summary
-            : '-';
+            : '';
 
     return Column(
       children: [
