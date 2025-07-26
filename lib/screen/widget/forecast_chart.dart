@@ -76,7 +76,7 @@ class ForecastChart extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             offset: const Offset(0, 0),
             blurRadius: 4,
             spreadRadius: 0,
@@ -129,8 +129,8 @@ class ForecastChart extends StatelessWidget {
               lowValueMapper: (ChartRangeModel data, _) => data.lower,
               gradient: LinearGradient(
                 colors: [
-                  BizColors.colorGreen.getColor(context).withOpacity(0.4),
-                  BizColors.colorGreenDark.getColor(context).withOpacity(0.2),
+                  BizColors.colorGreen.getColor(context).withValues(alpha: 0.4),
+                  BizColors.colorGreenDark.getColor(context).withValues(alpha: 0.2),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -154,8 +154,8 @@ class ForecastChart extends StatelessWidget {
               lowValueMapper: (ChartRangeModel data, _) => data.lower,
               gradient: LinearGradient(
                 colors: [
-                  BizColors.colorOrange.getColor(context).withOpacity(0.4),
-                  BizColors.colorOrangeDark.getColor(context).withOpacity(0.2),
+                  BizColors.colorOrange.getColor(context).withValues(alpha: 0.4),
+                  BizColors.colorOrangeDark.getColor(context).withValues(alpha: 0.2),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
