@@ -107,15 +107,14 @@ class ApiServices {
     return response;
   }
 
-  Future<ForecastResponse> getSaleForecast(String lat, String long) {
-    // final uri = Uri.parse(Constant.baseUrl).replace(
+  Future<ForecastResponse> getSaleForecast(
+    String lat,
+    String long, {
+    int? daysLimit,
+  }) {
     final uri = Uri.parse("http://192.168.100.51:3000").replace(
       path: "/sale/forecast/",
-      queryParameters: {
-        "lat": lat.toString(),
-        "long": long.toString(),
-        "days_limit": "8",
-      },
+      queryParameters: {"lat": lat, "long": long, "days_limit": daysLimit},
     );
     final response = BaseNetwork.get<ForecastResponse>(
       url: uri,
