@@ -2,6 +2,8 @@ import 'package:bizcopilot_flutter/utils/extension_utils.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../data/api/api_service.dart';
+import '../../data/model/chart_model.dart';
+import '../../data/model/chart_range_model.dart';
 import '../../data/model/response/forecast_response.dart';
 import '../../static/state/expense_forecast_result_state.dart';
 import '../../static/state/sale_forecast_result_state.dart';
@@ -46,9 +48,32 @@ $narrative
 
     try {
       final result = await _apiServices.getSaleForecast("-6.2088", "106.8456");
+
+      final saleForecast = result.monthlyData?.forecastData;
+
+      final saleForecastList =
+          saleForecast
+              ?.map((e) => ChartModel(DateTime.parse(e.x ?? ""), e.yhat ?? 0.0))
+              .toList();
+
+      final saleForecastRangeList =
+          saleForecast
+              ?.map(
+                (e) => ChartRangeModel(
+                  DateTime.parse(e.x ?? ""),
+                  e.yhatLower ?? 0.0,
+                  e.yhatUpper ?? 0.0,
+                ),
+              )
+              .toList();
+
       final fullSummary = _buildFullSummary(result.monthlyData?.analysisResult);
 
-      _saleResultState = SaleForecastLoadedState(result, fullSummary);
+      _saleResultState = SaleForecastLoadedState(
+        saleForecastList ?? [],
+        saleForecastRangeList ?? [],
+        fullSummary,
+      );
     } catch (e) {
       _saleResultState = SaleForecastErrorState(e.getMessage());
     }
@@ -66,9 +91,32 @@ $narrative
         "-6.2088",
         "106.8456",
       );
+
+      final expenseForecast = result.monthlyData?.forecastData;
+
+      final expenseForecastList =
+          expenseForecast
+              ?.map((e) => ChartModel(DateTime.parse(e.x ?? ""), e.yhat ?? 0.0))
+              .toList();
+
+      final expenseForecastRangeList =
+          expenseForecast
+              ?.map(
+                (e) => ChartRangeModel(
+                  DateTime.parse(e.x ?? ""),
+                  e.yhatLower ?? 0.0,
+                  e.yhatUpper ?? 0.0,
+                ),
+              )
+              .toList();
+
       final fullSummary = _buildFullSummary(result.monthlyData?.analysisResult);
 
-      _expenseResultState = ExpenseForecastLoadedState(result, fullSummary);
+      _expenseResultState = ExpenseForecastLoadedState(
+        expenseForecastList ?? [],
+        expenseForecastRangeList ?? [],
+        fullSummary,
+      );
     } catch (e) {
       _expenseResultState = ExpenseForecastErrorState(e.getMessage());
     }

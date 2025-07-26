@@ -1,11 +1,11 @@
+import 'package:bizcopilot_flutter/data/model/chart_model.dart';
+import 'package:bizcopilot_flutter/data/model/chart_range_model.dart';
 import 'package:bizcopilot_flutter/provider/forecast/forecast_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../../data/model/response/forecast_response.dart';
-import '../../provider/daily_reports/home_widgets_provider.dart';
 import '../../static/state/expense_forecast_result_state.dart';
 import '../../static/state/sale_forecast_result_state.dart';
 import '../../style/color/biz_colors.dart';
@@ -32,7 +32,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
       activationMode: ActivationMode.singleTap,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       Provider.of<ForecastProvider>(context, listen: false).getSaleForecast();
       Provider.of<ForecastProvider>(
         context,
@@ -46,24 +46,37 @@ class _ForecastScreenState extends State<ForecastScreen> {
     final saleResultState = context.watch<ForecastProvider>().saleResultState;
     final saleForecastData =
         saleResultState is SaleForecastLoadedState
-            ? saleResultState.data.monthlyData?.forecastData
-            : <ForecastData>[];
+            ? saleResultState.listData
+            : <ChartModel>[];
+    final saleForecastRangeData =
+        saleResultState is SaleForecastLoadedState
+            ? saleResultState.listRangeData
+            : <ChartRangeModel>[];
 
     final expenseResultState =
         context.watch<ForecastProvider>().expenseResultState;
     final expenseForecastData =
         expenseResultState is ExpenseForecastLoadedState
-            ? expenseResultState.data.monthlyData?.forecastData
-            : <ForecastData>[];
+            ? expenseResultState.listData
+            : <ChartModel>[];
+    final expenseForecastRangeData =
+        expenseResultState is ExpenseForecastLoadedState
+            ? expenseResultState.listRangeData
+            : <ChartRangeModel>[];
 
     return Scaffold(
       backgroundColor: BizColors.colorBackground.getColor(context),
       body: RefreshIndicator(
         onRefresh: () async {
-          await Provider.of<HomeWidgetsProvider>(
+          Provider.of<ForecastProvider>(
             context,
             listen: false,
-          ).getHomeWidgets();
+          ).getSaleForecast();
+
+          Provider.of<ForecastProvider>(
+            context,
+            listen: false,
+          ).getExpenseForecast();
         },
         child: ListView(
           padding: EdgeInsets.only(
@@ -105,8 +118,10 @@ class _ForecastScreenState extends State<ForecastScreen> {
             const SizedBox(height: 16),
             ForecastChart(
               tooltipBehavior: _tooltipBehavior,
-              saleForecast: saleForecastData,
-              expenseForecast: expenseForecastData,
+              saleForecastData: saleForecastData,
+              saleForecastRangeData: saleForecastRangeData,
+              expenseForecastData: expenseForecastData,
+              expenseForecastRangeData: expenseForecastRangeData,
             ),
             const SizedBox(height: 16),
             Consumer<ForecastProvider>(
@@ -120,7 +135,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
                         BizColors.colorGreen.getColor(context),
                         BizColors.colorGreenDark.getColor(context),
                       ],
-                      title: "Sales Forecast Summary",
+                      title: "Future Sales Insights",
                       content: summary,
                     );
                   case SaleForecastErrorState(error: var message):
@@ -141,7 +156,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
                         BizColors.colorOrange.getColor(context),
                         BizColors.colorOrangeDark.getColor(context),
                       ],
-                      title: "Expense Forecast Summary",
+                      title: "Upcoming Cost Trends",
                       content: summary,
                     ),
                   ExpenseForecastErrorState(error: var message) => _buildError(
@@ -165,39 +180,6 @@ class _ForecastScreenState extends State<ForecastScreen> {
         ShimmerCard(),
         const SizedBox(height: 16),
         ShimmerCard(),
-      ],
-    );
-  }
-
-  Widget _buildLoaded(List<dynamic> data) {
-    return Column(
-      children: [
-        ForecastGradientCard(
-          colors: [
-            BizColors.colorPrimary.getColor(context),
-            BizColors.colorPrimaryDark.getColor(context),
-          ],
-          title: "Predict Your Profits",
-          content: data[0].forecast ?? "-",
-        ),
-        const SizedBox(height: 16),
-        ForecastGradientCard(
-          colors: [
-            BizColors.colorGreen.getColor(context),
-            BizColors.colorGreenDark.getColor(context),
-          ],
-          title: "Future Sales Insights",
-          content: data[1].forecast ?? "-",
-        ),
-        const SizedBox(height: 16),
-        ForecastGradientCard(
-          colors: [
-            BizColors.colorOrange.getColor(context),
-            BizColors.colorOrangeDark.getColor(context),
-          ],
-          title: "Upcoming Cost Trends",
-          content: data[2].forecast ?? "-",
-        ),
       ],
     );
   }

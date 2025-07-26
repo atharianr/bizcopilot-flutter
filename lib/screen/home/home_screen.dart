@@ -1,4 +1,3 @@
-import 'package:bizcopilot_flutter/provider/daily_reports/add_report_provider.dart';
 import 'package:bizcopilot_flutter/provider/daily_reports/daily_reports_provider.dart';
 import 'package:bizcopilot_flutter/provider/daily_reports/home_widgets_provider.dart';
 import 'package:bizcopilot_flutter/provider/forecast/forecast_provider.dart';
@@ -6,7 +5,6 @@ import 'package:bizcopilot_flutter/static/state/sale_forecast_result_state.dart'
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../static/state/add_report_result_state.dart';
 import '../../static/state/daily_reports_result_state.dart';
 import '../../static/state/home_widgets_result_state.dart';
 import '../../style/color/biz_colors.dart';
@@ -25,8 +23,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late final AddReportProvider _addReportProvider;
-
   @override
   void initState() {
     super.initState();
@@ -35,19 +31,11 @@ class _HomeScreenState extends State<HomeScreen> {
       final daily = context.read<DailyReportsProvider>();
       final forecast = context.read<ForecastProvider>();
 
-      await Future.wait([home.getHomeWidgets(), daily.getDailyReports()]);
-
+      home.getHomeWidgets();
+      daily.getDailyReports();
       forecast.getSaleForecast();
       forecast.getExpenseForecast();
-
-      _attachAddReportListener();
     });
-  }
-
-  @override
-  void dispose() {
-    _addReportProvider.removeListener(_onAddReportChanged);
-    super.dispose();
   }
 
   @override
@@ -56,16 +44,25 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: BizColors.colorBackground.getColor(context),
       body: RefreshIndicator(
         onRefresh: () async {
-          await Future.wait([
-            Provider.of<HomeWidgetsProvider>(
-              context,
-              listen: false,
-            ).getHomeWidgets(),
-            Provider.of<DailyReportsProvider>(
-              context,
-              listen: false,
-            ).getDailyReports(),
-          ]);
+          Provider.of<HomeWidgetsProvider>(
+            context,
+            listen: false,
+          ).getHomeWidgets();
+
+          Provider.of<DailyReportsProvider>(
+            context,
+            listen: false,
+          ).getDailyReports();
+
+          Provider.of<ForecastProvider>(
+            context,
+            listen: false,
+          ).getSaleForecast();
+
+          Provider.of<ForecastProvider>(
+            context,
+            listen: false,
+          ).getExpenseForecast();
         },
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -307,17 +304,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-
-  void _attachAddReportListener() {
-    _addReportProvider = context.read<AddReportProvider>();
-    _addReportProvider.addListener(_onAddReportChanged);
-  }
-
-  void _onAddReportChanged() {
-    final state = _addReportProvider.resultState;
-    if (state is AddReportLoadedState) {
-      context.read<DailyReportsProvider>().getDailyReports();
-    }
   }
 }

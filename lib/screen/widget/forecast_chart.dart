@@ -4,7 +4,6 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../data/model/chart_model.dart';
 import '../../data/model/chart_range_model.dart';
-import '../../data/model/response/forecast_response.dart';
 import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
 
@@ -12,48 +11,20 @@ class ForecastChart extends StatelessWidget {
   const ForecastChart({
     super.key,
     required this.tooltipBehavior,
-    this.saleForecast = const [],
-    this.expenseForecast = const [],
+    this.saleForecastData = const [],
+    this.saleForecastRangeData = const [],
+    this.expenseForecastData = const [],
+    this.expenseForecastRangeData = const [],
   });
 
   final TooltipBehavior tooltipBehavior;
-  final List<ForecastData>? saleForecast;
-  final List<ForecastData>? expenseForecast;
+  final List<ChartModel>? saleForecastData;
+  final List<ChartRangeModel>? saleForecastRangeData;
+  final List<ChartModel>? expenseForecastData;
+  final List<ChartRangeModel>? expenseForecastRangeData;
 
   @override
   Widget build(BuildContext context) {
-    final saleForecastData =
-        saleForecast
-            ?.map((e) => ChartModel(DateTime.parse(e.x ?? ""), e.yhat ?? 0.0))
-            .toList();
-
-    final saleForecastRangeData =
-        saleForecast
-            ?.map(
-              (e) => ChartRangeModel(
-                DateTime.parse(e.x ?? ""),
-                e.yhatLower ?? 0.0,
-                e.yhatUpper ?? 0.0,
-              ),
-            )
-            .toList();
-
-    final expenseForecastData =
-        expenseForecast
-            ?.map((e) => ChartModel(DateTime.parse(e.x ?? ""), e.yhat ?? 0.0))
-            .toList();
-
-    final expenseForecastRangeData =
-        expenseForecast
-            ?.map(
-              (e) => ChartRangeModel(
-                DateTime.parse(e.x ?? ""),
-                e.yhatLower ?? 0.0,
-                e.yhatUpper ?? 0.0,
-              ),
-            )
-            .toList();
-
     final allValues = [
       ...?saleForecastData?.map((e) => e.value),
       ...?expenseForecastData?.map((e) => e.value),
@@ -130,7 +101,9 @@ class ForecastChart extends StatelessWidget {
               gradient: LinearGradient(
                 colors: [
                   BizColors.colorGreen.getColor(context).withValues(alpha: 0.4),
-                  BizColors.colorGreenDark.getColor(context).withValues(alpha: 0.2),
+                  BizColors.colorGreenDark
+                      .getColor(context)
+                      .withValues(alpha: 0.2),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -154,8 +127,12 @@ class ForecastChart extends StatelessWidget {
               lowValueMapper: (ChartRangeModel data, _) => data.lower,
               gradient: LinearGradient(
                 colors: [
-                  BizColors.colorOrange.getColor(context).withValues(alpha: 0.4),
-                  BizColors.colorOrangeDark.getColor(context).withValues(alpha: 0.2),
+                  BizColors.colorOrange
+                      .getColor(context)
+                      .withValues(alpha: 0.4),
+                  BizColors.colorOrangeDark
+                      .getColor(context)
+                      .withValues(alpha: 0.2),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,

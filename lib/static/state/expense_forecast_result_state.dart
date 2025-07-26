@@ -1,4 +1,5 @@
-import 'package:bizcopilot_flutter/data/model/response/forecast_response.dart';
+import 'package:bizcopilot_flutter/data/model/chart_model.dart';
+import 'package:bizcopilot_flutter/data/model/chart_range_model.dart';
 
 sealed class ExpenseForecastResultState {}
 
@@ -13,8 +14,9 @@ class ExpenseForecastErrorState extends ExpenseForecastResultState {
 }
 
 class ExpenseForecastLoadedState extends ExpenseForecastResultState {
-  final ForecastResponse data;
+  final List<ChartModel> listData;
+  final List<ChartRangeModel> listRangeData;
   final String summary;
 
-  ExpenseForecastLoadedState(this.data, this.summary);
+  ExpenseForecastLoadedState(this.listData, this.listRangeData, this.summary);
 }

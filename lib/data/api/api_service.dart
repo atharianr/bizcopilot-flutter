@@ -108,7 +108,8 @@ class ApiServices {
   }
 
   Future<ForecastResponse> getSaleForecast(String lat, String long) {
-    final uri = Uri.parse(Constant.baseUrl).replace(
+    // final uri = Uri.parse(Constant.baseUrl).replace(
+    final uri = Uri.parse("http://192.168.100.51:3000").replace(
       path: "/sale/forecast/",
       queryParameters: {
         "lat": lat.toString(),
@@ -125,7 +126,8 @@ class ApiServices {
   }
 
   Future<ForecastResponse> getExpenseForecast(String lat, String long) {
-    final uri = Uri.parse(Constant.baseUrl).replace(
+    // final uri = Uri.parse(Constant.baseUrl).replace(
+    final uri = Uri.parse("http://192.168.100.51:3000").replace(
       path: "/expense/forecast/",
       queryParameters: {
         "lat": lat.toString(),
