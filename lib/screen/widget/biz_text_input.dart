@@ -15,6 +15,7 @@ class BizTextInput extends StatelessWidget {
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final String? errorText;
+  final String? text;
 
   const BizTextInput({
     super.key,
@@ -28,6 +29,7 @@ class BizTextInput extends StatelessWidget {
     this.keyboardType,
     this.inputFormatters,
     this.errorText,
+    this.text,
   });
 
   @override

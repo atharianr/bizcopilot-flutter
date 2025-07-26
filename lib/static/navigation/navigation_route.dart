@@ -3,7 +3,8 @@ enum NavigationRoute {
   forecastRoute("/forecast"),
   reportsRoute("/reports"),
   detailRoute("/detail"),
-  addProductRoute("/add-product-route");
+  addProductRoute("/add-product-route"),
+  editProductRoute("/edit-product-route");
 
   const NavigationRoute(this.name);
 

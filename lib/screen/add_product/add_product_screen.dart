@@ -53,6 +53,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
     stockController = TextEditingController();
     costPriceController = TextEditingController();
     priceController = TextEditingController();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   Provider.of<AddProductProvider>(context, listen: false)
+    //       .addProduct();
+    // });
+
   }
 
   @override
