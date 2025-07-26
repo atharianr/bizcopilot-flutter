@@ -11,7 +11,9 @@ import 'package:bizcopilot_flutter/static/navigation/navigation_route.dart';
 import 'package:bizcopilot_flutter/style/theme/biz_theme.dart';
 import 'package:bizcopilot_flutter/provider/list_product/add_product_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
+import 'package:bizcopilot_flutter/provider/image_upload_provider.dart';
 
 import 'data/api/api_service.dart';
 
@@ -36,7 +38,10 @@ void main() async {
           create: (context) => ExampleApiProvider(context.read<ApiServices>()),
         ),
         ChangeNotifierProvider(
-          create: (context) => AddProductProvider(context.read<ApiServices>())
+          create: (context) => AddProductProvider(context.read<ApiServices>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UploadImageProvider(context.read<ApiServices>()),
         ),
       ],
       child: MainApp(),

@@ -34,7 +34,7 @@ class AddProductProvider extends ChangeNotifier {
   }
 
   void resetExpenseReportModel() {
-     _addReportModel = ProductRequestModel(
+    _addReportModel = ProductRequestModel(
       name: null,
       description: null,
       inventory: null,
@@ -94,7 +94,7 @@ class AddProductProvider extends ChangeNotifier {
 
   // Validation
   bool validateInputs() {
-  bool isValid = true;
+    bool isValid = true;
     resetErrors();
 
     if (_addReportModel == null) return false;
@@ -117,12 +117,14 @@ class AddProductProvider extends ChangeNotifier {
       isValid = false;
     }
 
-    if (_addReportModel!.costPrice == null || _addReportModel!.costPrice! <= 0) {
+    if (_addReportModel!.costPrice == null ||
+        _addReportModel!.costPrice! <= 0) {
       costPriceErr = "Cost price is required";
       isValid = false;
     }
 
-    if (_addReportModel!.inventory == null || _addReportModel!.inventory! <= 0) {
+    if (_addReportModel!.inventory == null ||
+        _addReportModel!.inventory! <= 0) {
       stockErr = "Stock is required";
       isValid = false;
     }
@@ -153,6 +155,7 @@ class AddProductProvider extends ChangeNotifier {
         inventory: _addReportModel?.inventory,
         price: _addReportModel?.price,
         costPrice: _addReportModel?.costPrice,
+        imageUrl: _addReportModel?.imageUrl,
       );
 
       await _apiServices.addProduct(request);
