@@ -1,13 +1,14 @@
+import 'package:bizcopilot_flutter/data/model/response/product_response.dart';
 import 'package:flutter/material.dart';
 
 import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
 
 class BizDropDown extends StatelessWidget {
-  final String? value;
+  final Products? value;
   final String hintText;
-  final List<String> items;
-  final ValueChanged<String?> onChanged;
+  final List<Products> items;
+  final void Function(int? value) onChanged;
   final String? errorText;
 
   const BizDropDown({
@@ -32,22 +33,24 @@ class BizDropDown extends StatelessWidget {
       );
     }
 
-    return DropdownButtonFormField<String>(
-      value: value?.isNotEmpty == true ? value : null,
+    return DropdownButtonFormField<int>(
+      value: value?.id,
       hint: Text(hintText, style: TextStyle(color: grayColor)),
       items:
-          items.map((category) {
+          items.map((item) {
             return DropdownMenuItem(
-              value: category,
+              value: item.id,
               child: Text(
-                category,
+                item.name.toString(),
                 style: BizTextStyles.bodyLargeMedium.copyWith(
                   color: BizColors.colorText.getColor(context),
                 ),
               ),
             );
           }).toList(),
-      onChanged: onChanged,
+      onChanged: (selectedValue) {
+        onChanged(selectedValue);
+      },
       style: BizTextStyles.bodyLargeMedium.copyWith(
         color: BizColors.colorText.getColor(context),
       ),

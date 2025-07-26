@@ -1,3 +1,4 @@
+import 'package:bizcopilot_flutter/static/state/monthly_reports_result_state.dart';
 import 'package:bizcopilot_flutter/utils/extension_utils.dart';
 import 'package:flutter/widgets.dart';
 
@@ -19,12 +20,32 @@ class DailyReportsProvider extends ChangeNotifier {
       notifyListeners();
 
       final result = await _apiServices.getDailyReports();
-      _resultState = DailyReportsLoadedState(
-        result.data?.getDailyReports?.dailyReports ?? [],
-      );
+      final reports = result.data?.getMonthlyReports?.reports ?? [];
+      _resultState = DailyReportsLoadedState(reports);
       notifyListeners();
     } catch (e) {
       _resultState = DailyReportsErrorState(e.getMessage());
+      notifyListeners();
+    }
+  }
+
+  MonthlyReportsResultState _monthlyReportsResultState =
+      MonthlyReportsNoneState();
+
+  MonthlyReportsResultState get monthlyReportsResultState =>
+      _monthlyReportsResultState;
+
+  Future<void> getMonthlyReports() async {
+    try {
+      _monthlyReportsResultState = MonthlyReportsLoadingState();
+      notifyListeners();
+
+      final result = await _apiServices.getDailyReports(30);
+      final monthlyReports = result.data?.getMonthlyReports?.reports ?? [];
+      _monthlyReportsResultState = MonthlyReportsLoadedState(monthlyReports);
+      notifyListeners();
+    } catch (e) {
+      _monthlyReportsResultState = MonthlyReportsErrorState(e.getMessage());
       notifyListeners();
     }
   }

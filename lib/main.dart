@@ -3,6 +3,7 @@ import 'package:bizcopilot_flutter/provider/daily_reports/add_report_provider.da
 import 'package:bizcopilot_flutter/provider/daily_reports/daily_reports_provider.dart';
 import 'package:bizcopilot_flutter/provider/daily_reports/home_widgets_provider.dart';
 import 'package:bizcopilot_flutter/provider/example/example_api_provider.dart';
+import 'package:bizcopilot_flutter/provider/forecast/forecast_provider.dart';
 import 'package:bizcopilot_flutter/provider/image_upload_provider.dart';
 import 'package:bizcopilot_flutter/provider/list_product/add_product_provider.dart';
 import 'package:bizcopilot_flutter/provider/list_product/list_product_provider.dart';
@@ -46,6 +47,9 @@ void main() async {
           create: (context) => AddProductProvider(context.read<ApiServices>()),
         ),
         ChangeNotifierProvider(
+          create: (context) => ForecastProvider(context.read<ApiServices>()),
+        ),
+		ChangeNotifierProvider(
           create: (context) => UploadImageProvider(context.read<ApiServices>()),
         ),
       ],

@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
-import '../../data/model/add_report_model.dart';
-import '../../provider/daily_reports/add_report_provider.dart';
 import '../../provider/main/index_nav_provider.dart';
 import '../../static/bottom_nav/bottom_nav.dart';
 import '../../style/color/biz_colors.dart';
@@ -19,26 +17,21 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double statusBarHeight = MediaQuery.of(context).padding.top;
-
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.only(top: statusBarHeight),
-        child: Consumer<IndexNavProvider>(
-          builder: (context, value, child) {
-            return switch (value.indexBottomNavBar) {
-              _ when value.indexBottomNavBar == BottomNav.home.index =>
-                const HomeScreen(),
-              _ when value.indexBottomNavBar == BottomNav.forecast.index =>
-                const ForecastScreen(),
-              _ when value.indexBottomNavBar == BottomNav.reports.index =>
-                const ReportsScreen(),
-              _ when value.indexBottomNavBar == BottomNav.products.index =>
-                const ListProduct(),
-              _ => const HomeScreen(),
-            };
-          },
-        ),
+      body: Consumer<IndexNavProvider>(
+        builder: (context, value, child) {
+          return switch (value.indexBottomNavBar) {
+            _ when value.indexBottomNavBar == BottomNav.home.index =>
+              const HomeScreen(),
+            _ when value.indexBottomNavBar == BottomNav.forecast.index =>
+              const ForecastScreen(),
+            _ when value.indexBottomNavBar == BottomNav.reports.index =>
+              const ReportsScreen(),
+            _ when value.indexBottomNavBar == BottomNav.products.index =>
+              const ListProduct(),
+            _ => const HomeScreen(),
+          };
+        },
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -56,17 +49,12 @@ class MainScreen extends StatelessWidget {
           currentIndex: context.watch<IndexNavProvider>().indexBottomNavBar,
           onTap: (index) {
             if (index == BottomNav.add.index) {
-              final provider = context.read<AddReportProvider>();
-
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
-                // barrierColor: Colors.transparent,
                 builder: (context) => const AddReportBottomSheet(),
-              ).then((_) {
-                provider.setReportModel = AddReportModel();
-              });
+              );
             } else {
               context.read<IndexNavProvider>().setIndexBottomNavBar = index;
             }

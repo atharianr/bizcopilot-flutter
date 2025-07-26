@@ -1,107 +1,107 @@
-class DailyReportsResponse {
+class MonthlyReportsResponse {
   Data? data;
 
-  DailyReportsResponse({this.data});
+  MonthlyReportsResponse({this.data});
 
-  DailyReportsResponse.fromJson(Map<String, dynamic> json) {
+  MonthlyReportsResponse.fromJson(Map<String, dynamic> json) {
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (this.data != null) {
-      data['data'] = this.data!.toJson();
+    final Map<String, dynamic> json = {};
+    if (data != null) {
+      json['data'] = data!.toJson();
     }
-    return data;
+    return json;
   }
 }
 
 class Data {
-  GetDailyReports? getDailyReports;
+  GetMonthlyReports? getMonthlyReports;
 
-  Data({this.getDailyReports});
+  Data({this.getMonthlyReports});
 
   Data.fromJson(Map<String, dynamic> json) {
-    getDailyReports =
-        json['getDailyReports'] != null
-            ? GetDailyReports.fromJson(json['getDailyReports'])
+    getMonthlyReports =
+        json['getMonthlyReports'] != null
+            ? GetMonthlyReports.fromJson(json['getMonthlyReports'])
             : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (getDailyReports != null) {
-      data['getDailyReports'] = getDailyReports!.toJson();
+    final Map<String, dynamic> json = {};
+    if (getMonthlyReports != null) {
+      json['getMonthlyReports'] = getMonthlyReports!.toJson();
     }
-    return data;
+    return json;
   }
 }
 
-class GetDailyReports {
-  List<DailyReports>? dailyReports;
+class GetMonthlyReports {
+  List<Reports>? reports;
 
-  GetDailyReports({this.dailyReports});
+  GetMonthlyReports({this.reports});
 
-  GetDailyReports.fromJson(Map<String, dynamic> json) {
-    if (json['dailyReports'] != null) {
-      dailyReports = <DailyReports>[];
-      json['dailyReports'].forEach((v) {
-        dailyReports!.add(DailyReports.fromJson(v));
+  GetMonthlyReports.fromJson(Map<String, dynamic> json) {
+    if (json['reports'] != null) {
+      reports = <Reports>[];
+      json['reports'].forEach((v) {
+        reports!.add(Reports.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (dailyReports != null) {
-      data['dailyReports'] = dailyReports!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> json = {};
+    if (reports != null) {
+      json['reports'] = reports!.map((v) => v.toJson()).toList();
     }
-    return data;
+    return json;
   }
 }
 
-class DailyReports {
+class Reports {
+  int? id;
+  int? productId;
+  String? name;
+  String? description;
+  String? transactionType;
+  String? value;
   String? createdAt;
   String? currency;
-  String? description;
-  int? id;
-  String? name;
-  String? transactionType;
-  int? transactionTypeId;
-  String? value;
 
-  DailyReports({
+  Reports({
+    this.id,
+    this.productId,
+    this.name,
+    this.description,
+    this.transactionType,
+    this.value,
     this.createdAt,
     this.currency,
-    this.description,
-    this.id,
-    this.name,
-    this.transactionType,
-    this.transactionTypeId,
-    this.value,
   });
 
-  DailyReports.fromJson(Map<String, dynamic> json) {
+  Reports.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    productId = json['product_id'];
+    name = json['name'];
+    description = json['description'];
+    transactionType = json['transaction_type'];
+    value = json['value'];
     createdAt = json['created_at'];
     currency = json['currency'];
-    description = json['description'];
-    id = json['id'];
-    name = json['name'];
-    transactionType = json['transactionType'];
-    transactionTypeId = json['transactionTypeId'];
-    value = json['value'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['created_at'] = createdAt;
-    data['currency'] = currency;
-    data['description'] = description;
-    data['id'] = id;
-    data['name'] = name;
-    data['transactionType'] = transactionType;
-    data['transactionTypeId'] = transactionTypeId;
-    data['value'] = value;
-    return data;
+    final Map<String, dynamic> json = {};
+    json['id'] = id;
+    json['product_id'] = productId;
+    json['name'] = name;
+    json['description'] = description;
+    json['transaction_type'] = transactionType;
+    json['value'] = value;
+    json['created_at'] = createdAt;
+    json['currency'] = currency;
+    return json;
   }
 }

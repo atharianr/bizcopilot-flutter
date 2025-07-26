@@ -1,17 +1,48 @@
+import 'package:bizcopilot_flutter/data/model/response/daily_reports_response.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../provider/daily_reports/add_report_provider.dart';
 import '../../provider/daily_reports/daily_reports_provider.dart';
-import '../../static/state/daily_reports_result_state.dart';
+import '../../static/state/add_report_result_state.dart';
+import '../../static/state/monthly_reports_result_state.dart';
 import '../../style/color/biz_colors.dart';
 import '../../style/typography/biz_text_styles.dart';
-import '../../utils/currency_utils.dart';
 import '../widget/reports/reports_card.dart';
 import '../widget/shimmer_card.dart';
 
-class ReportsScreen extends StatelessWidget {
+class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
+
+  @override
+  State<ReportsScreen> createState() => _ReportsScreenState();
+}
+
+class _ReportsScreenState extends State<ReportsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final dailyReportsProvider = Provider.of<DailyReportsProvider>(
+        context,
+        listen: false,
+      );
+      final addReportProvider = Provider.of<AddReportProvider>(
+        context,
+        listen: false,
+      );
+
+      dailyReportsProvider.getMonthlyReports();
+
+      addReportProvider.addListener(() {
+        final state = addReportProvider.resultState;
+        if (state is AddReportLoadedState) {
+          dailyReportsProvider.getMonthlyReports();
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,35 +50,61 @@ class ReportsScreen extends StatelessWidget {
       backgroundColor: BizColors.colorBackground.getColor(context),
       body: RefreshIndicator(
         onRefresh: () async {
-          await Future.wait([
-            Provider.of<DailyReportsProvider>(
-              context,
-              listen: false,
-            ).getDailyReports(),
-          ]);
+          await Provider.of<DailyReportsProvider>(
+            context,
+            listen: false,
+          ).getMonthlyReports();
         },
-        child: ListView(
-          padding: const EdgeInsets.all(24.0),
+        child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          children: [
-            Text(
-              "Your Reports",
-              style: BizTextStyles.titleLargeBold.copyWith(
-                color: BizColors.colorText.getColor(context),
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.only(
+                top: 24 + MediaQuery.of(context).padding.top,
+                bottom: 24,
+                left: 24,
+                right: 24,
+              ),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Your Reports",
+                      style: BizTextStyles.titleLargeBold.copyWith(
+                        color: BizColors.colorText.getColor(context),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "A look at your reports this month",
+                      style: BizTextStyles.bodyLargeMedium.copyWith(
+                        color: BizColors.colorText.getColor(context),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            Center(
-              child: Consumer<DailyReportsProvider>(
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              sliver: Consumer<DailyReportsProvider>(
                 builder: (context, value, child) {
-                  return switch (value.resultState) {
-                    DailyReportsLoadingState() => _buildLoading(),
-                    DailyReportsLoadedState(data: var data) => _buildLoaded(
-                      data,
+                  return switch (value.monthlyReportsResultState) {
+                    MonthlyReportsLoadingState() => SliverToBoxAdapter(
+                      child: _buildLoading(),
                     ),
-                    DailyReportsErrorState(error: var message) => _buildError(
-                      message,
-                    ),
-                    _ => const SizedBox(),
+                    MonthlyReportsLoadedState(reports: final data)
+                        when data.isEmpty =>
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: _buildEmptyState(),
+                      ),
+                    MonthlyReportsLoadedState(reports: final data) =>
+                      _buildGroupedReports(data),
+                    MonthlyReportsErrorState(error: final message) =>
+                      SliverToBoxAdapter(child: _buildError(message)),
+                    _ => const SliverToBoxAdapter(child: SizedBox()),
                   };
                 },
               ),
@@ -60,8 +117,9 @@ class ReportsScreen extends StatelessWidget {
 
   Widget _buildLoading() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 24),
+        const SizedBox(height: 24),
         Padding(
           padding: const EdgeInsets.only(right: 144),
           child: ShimmerCard(height: 24),
@@ -77,64 +135,69 @@ class ReportsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLoaded(List<dynamic> data) {
-    // Group data by formatted date
-    final Map<String, List<dynamic>> groupedData = {};
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.receipt_long_rounded,
+            size: 64,
+            color: Colors.grey.shade400,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No reports available',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  SliverList _buildGroupedReports(List<Reports> data) {
+    final Map<String, List<Reports>> groupedData = {};
 
     for (var item in data) {
       String date;
       try {
         date = DateFormat(
           'EEEE, dd MMMM yyyy',
-        ).format(DateTime.parse(item.createdAt));
+        ).format(DateTime.parse(item.createdAt ?? ""));
       } catch (e) {
         date = 'Unknown Date';
       }
 
-      if (groupedData[date] == null) {
-        groupedData[date] = [];
-      }
-      groupedData[date]!.add(item);
+      groupedData.putIfAbsent(date, () => []).add(item);
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children:
-          groupedData.entries.map((entry) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Text(
-                    entry.key,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                // const Divider(),
-                ...entry.value.map((item) {
-                  return ListReports(
-                    title: item.name ?? "",
-                    description: item.description ?? "",
-                    amount: CurrencyUtils.formatCurrency(
-                      item.currency,
-                      item.value ?? "",
-                    ),
-                    type: item.transactionType ?? "",
-                  );
-                }),
-                const SizedBox(height: 12),
-              ],
-            );
-          }).toList(),
-    );
+    final List<Widget> widgets = [];
+
+    groupedData.forEach((date, items) {
+      widgets.addAll([
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            date,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+        ),
+        ...items.map((item) => ReportsCard(reportData: item)),
+        const SizedBox(height: 12),
+      ]);
+    });
+
+    return SliverList(delegate: SliverChildListDelegate(widgets));
   }
 
   Widget _buildError(String message) {
-    return Text(message, style: TextStyle(color: BizColors.colorText.color));
+    return Padding(
+      padding: const EdgeInsets.only(top: 24),
+      child: Text(message, style: TextStyle(color: BizColors.colorText.color)),
+    );
   }
 }

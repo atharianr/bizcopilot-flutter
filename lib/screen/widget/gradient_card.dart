@@ -46,45 +46,50 @@ class GradientCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: BizColors.colorBlack
-                  .getColor(context)
-                  .withAlpha((255 * 0.06).round()),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(
-                        forecast,
-                        style: BizTextStyles.labelSmallMedium.copyWith(
-                          color: BizColors.colorWhite.getColor(context),
+          Visibility(
+            visible: forecast.isNotEmpty,
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: BizColors.colorBlack
+                    .getColor(context)
+                    .withAlpha((255 * 0.06).round()),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          forecast,
+                          style: BizTextStyles.labelSmallMedium.copyWith(
+                            color: BizColors.colorWhite.getColor(context),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 3,
                         ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: SvgPicture.asset(
-                      'assets/images/ic_artificial_intelligence_white_12.svg',
-                      width: 8,
-                      height: 8,
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0, top: 4.0),
+                      child: SvgPicture.asset(
+                        'assets/images/ic_artificial_intelligence_white_12.svg',
+                        width: 8,
+                        height: 8,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(
+              top: 4.0,
               bottom: 2.0,
               left: 12.0,
               right: 12.0,

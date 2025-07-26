@@ -49,5 +49,9 @@
 	<string>This app needs access to camera to take photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to photo library to select images</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app requires location access to fetch forecasts.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app requires location access to fetch forecasts even in background.</string>
 </dict>
 </plist>

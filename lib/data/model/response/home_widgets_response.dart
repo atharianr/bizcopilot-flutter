@@ -8,41 +8,41 @@ class HomeWidgetsResponse {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (this.data != null) {
-      data['data'] = this.data!.toJson();
+    final Map<String, dynamic> json = {};
+    if (data != null) {
+      json['data'] = data!.toJson();
     }
-    return data;
+    return json;
   }
 }
 
 class Data {
-  GetHomeWidget? getHomeWidget;
+  GetHomeWidgets? getHomeWidgets;
 
-  Data({this.getHomeWidget});
+  Data({this.getHomeWidgets});
 
   Data.fromJson(Map<String, dynamic> json) {
-    getHomeWidget =
-        json['getHomeWidget'] != null
-            ? GetHomeWidget.fromJson(json['getHomeWidget'])
+    getHomeWidgets =
+        json['getHomeWidgets'] != null
+            ? GetHomeWidgets.fromJson(json['getHomeWidgets'])
             : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (getHomeWidget != null) {
-      data['getHomeWidget'] = getHomeWidget!.toJson();
+    final Map<String, dynamic> json = {};
+    if (getHomeWidgets != null) {
+      json['getHomeWidgets'] = getHomeWidgets!.toJson();
     }
-    return data;
+    return json;
   }
 }
 
-class GetHomeWidget {
+class GetHomeWidgets {
   List<Widgets>? widgets;
 
-  GetHomeWidget({this.widgets});
+  GetHomeWidgets({this.widgets});
 
-  GetHomeWidget.fromJson(Map<String, dynamic> json) {
+  GetHomeWidgets.fromJson(Map<String, dynamic> json) {
     if (json['widgets'] != null) {
       widgets = <Widgets>[];
       json['widgets'].forEach((v) {
@@ -52,52 +52,29 @@ class GetHomeWidget {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final Map<String, dynamic> json = {};
     if (widgets != null) {
-      data['widgets'] = widgets!.map((v) => v.toJson()).toList();
+      json['widgets'] = widgets!.map((v) => v.toJson()).toList();
     }
-    return data;
+    return json;
   }
 }
 
 class Widgets {
-  String? createdAt;
-  String? currency;
-  String? forecast;
-  int? id;
   String? name;
   int? value;
-  bool? withForecast;
 
-  Widgets({
-    this.createdAt,
-    this.currency,
-    this.forecast,
-    this.id,
-    this.name,
-    this.value,
-    this.withForecast,
-  });
+  Widgets({this.name, this.value});
 
   Widgets.fromJson(Map<String, dynamic> json) {
-    createdAt = json['created_at'];
-    currency = json['currency'];
-    forecast = json['forecast'];
-    id = json['id'];
     name = json['name'];
     value = json['value'];
-    withForecast = json['withForecast'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['created_at'] = createdAt;
-    data['currency'] = currency;
-    data['forecast'] = forecast;
-    data['id'] = id;
-    data['name'] = name;
-    data['value'] = value;
-    data['withForecast'] = withForecast;
-    return data;
+    final Map<String, dynamic> json = {};
+    json['name'] = name;
+    json['value'] = value;
+    return json;
   }
 }

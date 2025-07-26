@@ -76,7 +76,7 @@ class Products {
   bool? isDeleted;
   String? createdAt;
   String? updatedAt;
-  Null? deletedAt;
+  String? deletedAt;
 
   Products({
     this.id,

@@ -1,33 +1,40 @@
 PODS:
-  - camera_avfoundation (0.0.1):
-    - Flutter
   - Flutter (1.0.0)
   - flutter_native_splash (2.4.3):
     - Flutter
+  - geolocator_apple (1.2.0):
+    - Flutter
+    - FlutterMacOS
   - permission_handler_apple (9.3.0):
+    - Flutter
+  - camera_avfoundation (0.0.1):
     - Flutter
 
 DEPENDENCIES:
-  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - Flutter (from `Flutter`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
+  - geolocator_apple (from `.symlinks/plugins/geolocator_apple/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
 
 EXTERNAL SOURCES:
-  camera_avfoundation:
-    :path: ".symlinks/plugins/camera_avfoundation/ios"
   Flutter:
     :path: Flutter
   flutter_native_splash:
     :path: ".symlinks/plugins/flutter_native_splash/ios"
+  geolocator_apple:
+    :path: ".symlinks/plugins/geolocator_apple/darwin"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
+  camera_avfoundation:
+    :path: ".symlinks/plugins/camera_avfoundation/ios"
 
 SPEC CHECKSUMS:
-  camera_avfoundation: be3be85408cd4126f250386828e9b1dfa40ab436
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_native_splash: c32d145d68aeda5502d5f543ee38c192065986cf
+  flutter_native_splash: df59bb2e1421aa0282cb2e95618af4dcb0c56c29
+  geolocator_apple: 66b711889fd333205763b83c9dcf0a57a28c7afd
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
+  camera_avfoundation: be3be85408cd4126f250386828e9b1dfa40ab436
 
 PODFILE CHECKSUM: 4305caec6b40dde0ae97be1573c53de1882a07e5
 

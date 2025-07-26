@@ -20,7 +20,7 @@ class HomeWidgetsProvider extends ChangeNotifier {
 
       final result = await _apiServices.getHomeWidgets();
       _resultState = HomeWidgetsLoadedState(
-        result.data?.getHomeWidget?.widgets ?? [],
+        result.data?.getHomeWidgets?.widgets ?? [],
       );
       notifyListeners();
     } catch (e) {

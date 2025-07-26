@@ -1,5 +1,7 @@
 import 'package:bizcopilot_flutter/provider/daily_reports/daily_reports_provider.dart';
 import 'package:bizcopilot_flutter/provider/daily_reports/home_widgets_provider.dart';
+import 'package:bizcopilot_flutter/provider/forecast/forecast_provider.dart';
+import 'package:bizcopilot_flutter/static/state/sale_forecast_result_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,12 +26,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<HomeWidgetsProvider>(context, listen: false).getHomeWidgets();
-      Provider.of<DailyReportsProvider>(
-        context,
-        listen: false,
-      ).getDailyReports();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final home = context.read<HomeWidgetsProvider>();
+      final daily = context.read<DailyReportsProvider>();
+      final forecast = context.read<ForecastProvider>();
+
+      home.getHomeWidgets();
+      daily.getDailyReports();
+      forecast.getSaleForecast();
+      forecast.getExpenseForecast();
     });
   }
 
@@ -39,48 +44,45 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: BizColors.colorBackground.getColor(context),
       body: RefreshIndicator(
         onRefresh: () async {
-          await Future.wait([
-            Provider.of<HomeWidgetsProvider>(
-              context,
-              listen: false,
-            ).getHomeWidgets(),
-            Provider.of<DailyReportsProvider>(
-              context,
-              listen: false,
-            ).getDailyReports(),
-          ]);
+          Provider.of<HomeWidgetsProvider>(
+            context,
+            listen: false,
+          ).getHomeWidgets();
+
+          Provider.of<DailyReportsProvider>(
+            context,
+            listen: false,
+          ).getDailyReports();
+
+          Provider.of<ForecastProvider>(
+            context,
+            listen: false,
+          ).getSaleForecast();
+
+          Provider.of<ForecastProvider>(
+            context,
+            listen: false,
+          ).getExpenseForecast();
         },
-        child: ListView(
-          padding: EdgeInsets.only(top: 24),
+        child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          children: [
-            _buildGreetingSection(context),
-            const SizedBox(height: 24),
-            Consumer<HomeWidgetsProvider>(
-              builder: (context, value, child) {
-                return switch (value.resultState) {
-                  HomeWidgetsLoadingState() => _buildHomeLoading(),
-                  HomeWidgetsLoadedState(data: var data) => _buildHomeLoaded(
-                    data,
-                  ),
-                  HomeWidgetsErrorState(error: var message) => _buildError(
-                    message,
-                  ),
-                  _ => const SizedBox(),
-                };
-              },
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.only(
+                top: 24 + MediaQuery.of(context).padding.top,
+              ),
+              sliver: SliverToBoxAdapter(child: _buildGreetingSection(context)),
             ),
-            const SizedBox(height: 24),
-            _buildDailyReportsHeader(context),
-            const SizedBox(height: 10),
-            Center(
-              child: Consumer<DailyReportsProvider>(
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            SliverToBoxAdapter(
+              child: Consumer<HomeWidgetsProvider>(
                 builder: (context, value, child) {
                   return switch (value.resultState) {
-                    DailyReportsLoadingState() => _buildDailyLoading(),
-                    DailyReportsLoadedState(data: var data) =>
-                      _buildDailyLoaded(data),
-                    DailyReportsErrorState(error: var message) => _buildError(
+                    HomeWidgetsLoadingState() => _buildHomeLoading(),
+                    HomeWidgetsLoadedState(data: var data) => _buildHomeLoaded(
+                      data,
+                    ),
+                    HomeWidgetsErrorState(error: var message) => _buildError(
                       message,
                     ),
                     _ => const SizedBox(),
@@ -88,6 +90,42 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            SliverToBoxAdapter(child: _buildDailyReportsHeader(context)),
+            const SliverToBoxAdapter(child: SizedBox(height: 10)),
+            Consumer<DailyReportsProvider>(
+              builder: (context, value, child) {
+                return switch (value.resultState) {
+                  DailyReportsLoadingState() => _buildDailyLoading(),
+
+                  DailyReportsLoadedState(reports: final data)
+                      when data.isEmpty =>
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _buildNoReportsAvailable(),
+                    ),
+
+                  DailyReportsLoadedState(reports: final data) => SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final item = data[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 4,
+                        ),
+                        child: ReportsCard(reportData: item),
+                      );
+                    }, childCount: data.length),
+                  ),
+
+                  DailyReportsErrorState(error: final message) =>
+                    SliverToBoxAdapter(child: _buildError(message)),
+
+                  _ => const SliverToBoxAdapter(child: SizedBox()),
+                };
+              },
+            ),
+            SliverToBoxAdapter(child: SizedBox(height: 16)),
           ],
         ),
       ),
@@ -143,16 +181,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHomeLoaded(List<dynamic> data) {
+    final saleResultState = context.watch<ForecastProvider>().saleResultState;
+    final saleSummary =
+        saleResultState is SaleForecastLoadedState
+            ? saleResultState.summary
+            : '';
+
+    final expenseResultState =
+        context.watch<ForecastProvider>().saleResultState;
+    final expenseSummary =
+        expenseResultState is SaleForecastLoadedState
+            ? expenseResultState.summary
+            : '';
+
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: GradientProfitCard(
-            forecast: data[0].forecast ?? "",
-            amount: CurrencyUtils.formatCurrency(
-              data[0].currency,
-              data[0].value,
-            ),
+            forecast: "test forecast profit",
+            amount: CurrencyUtils.formatCurrency("Rp", data[0].value),
             colors: [
               BizColors.colorPrimary.getColor(context),
               BizColors.colorPrimaryDark.getColor(context),
@@ -163,16 +211,14 @@ class _HomeScreenState extends State<HomeScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: GradientCard(
                   title: "Sales",
                   iconUri: "assets/images/ic_arrow_up_circle_white_12.svg",
-                  forecast: data[1].forecast ?? "",
-                  amount: CurrencyUtils.formatCurrency(
-                    data[1].currency,
-                    data[1].value,
-                  ),
+                  forecast: saleSummary,
+                  amount: CurrencyUtils.formatCurrency("Rp", data[2].value),
                   colors: [
                     BizColors.colorGreen.getColor(context),
                     BizColors.colorGreenDark.getColor(context),
@@ -184,11 +230,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GradientCard(
                   title: "Expenses",
                   iconUri: "assets/images/ic_arrow_down_circle_white_12.svg",
-                  forecast: data[2].forecast ?? "",
-                  amount: CurrencyUtils.formatCurrency(
-                    data[2].currency,
-                    data[2].value,
-                  ),
+                  forecast: expenseSummary,
+                  amount: CurrencyUtils.formatCurrency("Rp", data[1].value),
                   colors: [
                     BizColors.colorOrange.getColor(context),
                     BizColors.colorOrangeDark.getColor(context),
@@ -215,42 +258,50 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildDailyLoading() {
-    return Column(
-      children: List.generate(3, (index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 24),
-          child: ShimmerCard(),
-        );
-      }),
+    return SliverToBoxAdapter(
+      child: Column(
+        children: List.generate(3, (index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 24),
+            child: ShimmerCard(),
+          );
+        }),
+      ),
     );
   }
 
-  Widget _buildDailyLoaded(List<dynamic> data) {
-    return Column(
-      children: List.generate(data.length, (index) {
-        final item = data[index];
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: ListReports(
-            title: item.name ?? "",
-            description: item.description ?? "",
-            amount: CurrencyUtils.formatCurrency(
-              item.currency,
-              item.value ?? "",
-            ),
-            type: item.transactionType ?? "",
+  Widget _buildNoReportsAvailable() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.receipt_long_rounded,
+            size: 64,
+            color: Colors.grey.shade400,
           ),
-        );
-      }),
+          const SizedBox(height: 16),
+          Text(
+            'No reports available for today',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildError(String message) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Text(
-        message,
-        style: TextStyle(color: BizColors.colorText.getColor(context)),
+      child: Center(
+        child: Text(
+          message,
+          style: TextStyle(color: BizColors.colorText.getColor(context)),
+        ),
       ),
     );
   }
